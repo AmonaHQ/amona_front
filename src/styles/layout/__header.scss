@@ -12,7 +12,6 @@
     position: sticky;
     top: 0;
     animation: slideInDown 0.5s;
-    
   }
   &--unfix {
     top: 0;
@@ -37,6 +36,23 @@
       display: flex;
       margin-right: 2rem;
       list-style: none;
+      position: relative;
+
+      & input {
+        display: none;
+
+        &:checked ~ label ul {
+          transform: scaleY(1);
+          transform-origin: top;
+          opacity: 1;
+          animation: slideMenuDown 0.3s;
+        }
+        &:not(:checked) ~ label ul {
+          transform-origin: top;
+          opacity: 0;
+          animation: slideMenuUp 0.3s;
+        }
+      }
     }
 
     &__item {
@@ -52,6 +68,64 @@
     &__link:visited {
       color: var(--color-headings);
       text-decoration: none;
+    }
+
+    &__user {
+      &__list {
+        background-color: #fff;
+        list-style: none;
+        position: absolute;
+        top: 4rem;
+        width: fit-content;
+        min-width: 20rem;
+        left: 2rem;
+        display: flex;
+        flex-direction: column;
+        align-content: flex-start;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+
+        transform: scaleY(0);
+        opacity: 0;
+
+        & li {
+          display: grid;
+          grid-template-columns: 2.5rem min-content;
+        }
+        &--mobile {
+          list-style: none;
+          padding: 2rem 3rem 0 3rem;
+
+          & li {
+            display: grid;
+            grid-template-columns: 3rem min-content;
+          }
+
+         
+        }
+      }
+
+      &__item {
+        font-size: 13.5px;
+        padding: 1rem;
+        padding-right: 4rem;
+        white-space: nowrap;
+        &:hover {
+          background-color: #f7f7f9;
+          cursor: pointer;
+        }
+
+        & i {
+          margin-right: 1rem;
+        }
+        & span {
+          color: var(--color-headings);
+        }
+
+        &:nth-child(1) {
+          background-color: #eee;
+        }
+      }
     }
 
     @include respond(tiny) {

@@ -49,10 +49,30 @@
   }
   60% {
     transform: scale(1.08);
-
   }
   100% {
     transform: scale(1);
-    
+  }
+}
+
+@keyframes slideMenuDown {
+  0% {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+@keyframes slideMenuUp {
+  0% {
+    transform: scaleY(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleY(0);
   }
 }
