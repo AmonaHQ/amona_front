@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
+import { NavLink } from "react-router-dom";
 const Overlay = (props) => {
   const [modalShow, setModalShow] = useState(false);
 
@@ -58,7 +59,7 @@ const Overlay = (props) => {
               </div>
               <div className="form__bottom__links">
                 <a href="/">Lost your password ?</a> <span>&nbsp;/&nbsp;</span>{" "}
-                <a href="/"> Register</a>
+                <NavLink to="/registration">Register</NavLink>
               </div>
             </div>
             <div className="form__captcha form__captcha--login">

@@ -63,9 +63,10 @@
         margin-right: 2rem;
       }
     }
-
+    & a,
     &__link:link,
-    &__link:visited {
+    &__link:visited,
+    &__link:active {
       color: var(--color-headings);
       text-decoration: none;
     }
@@ -100,8 +101,6 @@
             display: grid;
             grid-template-columns: 3rem min-content;
           }
-
-         
         }
       }
 

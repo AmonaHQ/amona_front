@@ -58,6 +58,13 @@
     }
     &__button {
       display: flex;
+
+      & a:link, a:visited, a:active {
+        text-decoration: none;
+        width: 100% !important;
+        display: flex;
+        justify-items: center;
+      }
       & button {
         background-color: var(--color-danger);
         font-size: 1.4rem;

@@ -1,13 +1,26 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
-const PersonalHome = () => {
+const Loaded = ({ data }) => {
+  const [inputData, setInputData] = useState({});
+
+  const handleChange = (event) => {
+    const allData = { ...inputData };
+    allData[event.target.name] =
+      event.target.name === "hidePhoneNumber"
+        ? event.target.checked
+        : event.target.value;
+    setInputData(allData);
+  };
+  useEffect(() => {
+    setInputData(data);
+  }, [data]);
   return (
     <>
       <div className="dashboard__main__quick-stat card">
         <figure className="dashboard__main__quick-stat__avatar">
           <i className="fa fa-user"></i>
 
-          <h2>Christian</h2>
+          <h2>{data.firstName}</h2>
         </figure>
 
         <div className="dashboard__main__quick-stat__values">
@@ -45,7 +58,7 @@ const PersonalHome = () => {
       </div>
       <div className="dashboard__main__profile card">
         <div className="dashboard__main__profile__heading">
-          <h2 className="">Hello Christian ! </h2>
+          <h2 className="">{`Hello ${data.firstName} !`} </h2>
           <p>You last logged in at: 05 January 2021 06:54 </p>
         </div>
         <div className="dashboard__main__profile__photo card">
@@ -73,26 +86,69 @@ const PersonalHome = () => {
             <form action="" className="form form--account">
               <div className="formGroup">
                 <label htmlFor="" className="formGroup__label">
-                  Name
-                </label>
-                <div className="formGroup__inputs__single">
-                  <input type="text" className="formGroup__input" />
-                </div>
-              </div>
-              <div className="formGroup">
-                <label htmlFor="" className="formGroup__label">
-                  Username
+                  First Name
                 </label>
                 <div className="formGroup__inputs__double">
                   <i className="fa fa-user"></i>
                   <input
                     type="text"
                     className="formGroup__input"
-                    placeholder="Name"
+                    placeholder="First Name"
+                    name="firstName"
+                    schema={JSON.stringify({
+                      required: true,
+                      maxLength: 15,
+                      maxWords: 1,
+                      label: "First Name",
+                    })}
+                    value={inputData.firstName}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
-
+              <div className="formGroup">
+                <label htmlFor="" className="formGroup__label">
+                  Last Name
+                </label>
+                <div className="formGroup__inputs__double">
+                  <i className="fa fa-user"></i>
+                  <input
+                    type="text"
+                    className="formGroup__input"
+                    placeholder="Last Name"
+                    name="lastName"
+                    schema={JSON.stringify({
+                      required: true,
+                      maxLength: 15,
+                      maxWords: 1,
+                      label: "Last Name",
+                    })}
+                    value={inputData.lastName}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+              <div className="formGroup">
+                <label htmlFor="" className="formGroup__label">
+                  Username
+                </label>
+                <div className="formGroup__inputs__single">
+                  <input
+                    type="text"
+                    className="formGroup__input"
+                    placeholder="Username"
+                    name="username"
+                    schema={JSON.stringify({
+                      required: true,
+                      maxLength: 15,
+                      maxWords: 1,
+                      label: "Username",
+                    })}
+                    value={inputData.username}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
               <div className="formGroup">
                 <label htmlFor="" className="formGroup__label">
                   Email
@@ -103,6 +159,15 @@ const PersonalHome = () => {
                     type="text"
                     className="formGroup__input"
                     placeholder="Email"
+                    name="email"
+                    schema={JSON.stringify({
+                      required: true,
+                      maxLength: 15,
+                      maxWords: 1,
+                      label: "Email",
+                    })}
+                    value={inputData.email}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -116,6 +181,15 @@ const PersonalHome = () => {
                     type="text"
                     className="formGroup__input"
                     placeholder="Phone"
+                    name="phoneNumber"
+                    schema={JSON.stringify({
+                      required: true,
+                      maxLength: 15,
+                      maxWords: 1,
+                      label: "Phone Number",
+                    })}
+                    value={inputData.phoneNumber}
+                    onChange={handleChange}
                   />
                   <div className="formGroup__inputs__tripple__check">
                     <input
@@ -140,4 +214,4 @@ const PersonalHome = () => {
   );
 };
 
-export default PersonalHome;
+export default Loaded;

@@ -51,7 +51,7 @@
 
       &__item {
         background-color: #fff;
-        padding:10px;
+        padding: 10px;
         font-size: 12px;
         color: var(--color-headings);
         cursor: pointer;
@@ -117,19 +117,42 @@
       @include respond(tiny) {
         grid-template-columns: 1fr;
         width: 90%;
-        margin:  auto;
+        margin: auto;
         margin-top: 3rem;
       }
       &__avatar {
         display: flex;
         align-items: center;
         align-self: center;
+        position: relative;
         cursor: pointer;
 
+        &__user {
+          background-color: #fff;
+          height: 6rem;
+          width: 6.5rem;
+        }
+
+        &__name {
+          background-color: #fff;
+          height: 2rem;
+          width: 10rem;
+          margin-left: 2rem;
+        }
+
+        &__hover {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 100%;
+          width: 90%;
+          background-color: #f5f5f5b6;
+          animation: shine 1s infinite;
+        }
         @include respond(tiny) {
           flex-direction: column;
           width: 90%;
-          margin:  auto;
+          margin: auto;
           margin-top: 3rem;
           & i {
             margin: 1.5rem;
@@ -211,12 +234,24 @@
       padding: 1rem 1.5rem;
       @include respond(tiny) {
         width: 90%;
-        margin:  auto;
+        margin: auto;
         margin-top: 3rem;
       }
       &__heading {
         color: var(--color-headings);
-
+        position: relative;
+        overflow: hidden;
+        &__welcome {
+          background-color: #fff;
+          height: 3rem;
+          width: 18rem;
+        }
+        &__date {
+          background-color: #fff;
+          height: 1rem;
+          width: 25rem;
+          margin: 1rem 0;
+        }
         & h2 {
           font-size: 2rem;
         }
@@ -228,6 +263,13 @@
           font-size: 1.7rem;
           padding: 1rem 1.5rem;
           border-bottom: 1px solid var(--color-border);
+          position: relative;
+          overflow: hidden;
+          &__title {
+            background-color: #fff;
+            height: 2rem;
+            width: 10rem;
+          }
           @include hover;
         }
 
@@ -245,6 +287,11 @@
             display: grid;
             margin: 1.5rem 0;
             background-color: #fff !important;
+
+            &--skeleton {
+              background-color: #f5f5f5 !important;
+              border: none !important;
+            }
             & div {
               background-color: #fff;
               display: flex;
@@ -389,5 +436,20 @@
         }
       }
     }
+  }
+}
+
+.skeleton__hover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 90%;
+  background-color: #f5f5f5b6;
+  animation: shine 1.5s infinite;
+
+  &--white {
+    background-color: rgba(255, 255, 255, 0.671);
+    opacity: .3;
   }
 }

@@ -76,3 +76,20 @@
     transform: scaleY(0);
   }
 }
+
+@keyframes spin {
+  0% {
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shine {
+  0% {
+   transform: translateX(0);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}

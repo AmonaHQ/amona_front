@@ -1,16 +1,27 @@
 import React, { useState, useEffect, useRef } from "react";
+import { NavLink } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { loginState } from "../../recoil/atoms";
 import logo from "../../assets/img/cheapcars.png";
 import Overlay from "./overlay";
+import { useAuthToken } from "../../token";
+
 const Header = (props) => {
   const [checked, setChecked] = useState(false);
   const [modalShow, setModalShow] = useState(false);
   const [showHeader, setShowHeader] = useState(false);
-  const [isLoggedIn] = useState(false);
-  const [height] = useState(isLoggedIn ? "49rem" : "15rem");
+  const [isLoggedIn, setIsLoggedIn] = useRecoilState(loginState);
+  const [authToken, , eraseCookie] = useAuthToken();
+  const [height] = useState(isLoggedIn || authToken ? "49rem" : "15rem");
 
   const listRef = useRef();
   const resetShow = () => {
     setModalShow(false);
+  };
+  const logOut = () => {
+    eraseCookie();
+    setIsLoggedIn(false);
+    localStorage.setItem("authToken", null);
   };
   useEffect(() => {
     window.addEventListener("scroll", (event) => {
@@ -21,20 +32,17 @@ const Header = (props) => {
         setShowHeader(false);
       }
     });
-
-    const listHeight = listRef.current.clientHeight;
-    console.log("list", listHeight);
   }, []);
   return (
     <header className={`header  ${showHeader ? "header--sticky" : ""}`}>
       <figure className="header__logo">
-        <a href="/">
+        <NavLink to="/">
           <img src={logo} alt="Logo" className="header__logo__img" />
-        </a>
+        </NavLink>
       </figure>
 
       <nav className="header__nav">
-        {!isLoggedIn ? (
+        {!isLoggedIn && !authToken ? (
           <ul className="header__nav__list">
             <li
               className="header__nav__item"
@@ -43,17 +51,17 @@ const Header = (props) => {
               <i className="fa fa-user"></i> <span>Log In</span>
             </li>
             <li className="header__nav__item">
-              <a href="/" className="header__nav__link">
+              <NavLink to="/registration">
                 <i className="fa fa-user"></i> <span>Register</span>
-              </a>
+              </NavLink>
             </li>
           </ul>
         ) : (
           <ul className="header__nav__list">
-            <li className="header__nav__item">
-              <a href="/" className="header__nav__link">
+            <li className="header__nav__item" onClick={logOut}>
+              <NavLink to="/">
                 <i class="fas fa-sign-out-alt"></i> <span>Log Out</span>
-              </a>
+              </NavLink>
             </li>
             <input type="checkbox" id="user" />
             <label htmlFor="user" className="user-options">
@@ -101,9 +109,12 @@ const Header = (props) => {
         )}
 
         <div className="region__city__button">
-          <button className="post-ad region__city__button--header">
-            <i className="post-ad__icon fa fa-plus-circle"></i> Post Ad FREE
-          </button>
+          <NavLink to="/ads/new">
+            {" "}
+            <button className="post-ad region__city__button--header">
+              <i className="post-ad__icon fa fa-plus-circle"></i> Post Ad FREE
+            </button>
+          </NavLink>
         </div>
       </nav>
 
@@ -127,7 +138,7 @@ const Header = (props) => {
           ref={listRef}
           style={{ height: checked ? height : 0 }}
         >
-          {!isLoggedIn && (
+          {!isLoggedIn && !authToken && (
             <div
               className="region__city__button"
               onClick={() => setModalShow(true)}
@@ -137,7 +148,7 @@ const Header = (props) => {
               </button>
             </div>
           )}
-          {isLoggedIn && (
+          {(isLoggedIn || authToken) && (
             <ul className="header__nav__user__list--mobile">
               <li className="header__nav__user__item">
                 <i className="fa fa-home"></i> <span>Personal Home</span>
@@ -172,17 +183,21 @@ const Header = (props) => {
                 <i class="fas fa-times-circle"></i>
                 <span>Close account</span>
               </li>
-              <li className="header__nav__user__item">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Log Out</span>
+              <li className="header__nav__user__item" onClick={logOut}>
+                <NavLink to="/">
+                  <i class="fas fa-sign-out-alt"></i>
+                  <span>Log Out</span>
+                </NavLink>
               </li>
             </ul>
           )}
 
           <div className="region__city__button">
-            <button className="post-ad region__city__button--smallest-screen">
-              <i className="post-ad__icon fa fa-plus-circle"></i> Post Ad FREE
-            </button>
+            <NavLink to="/ads/new">
+              <button className="post-ad region__city__button--smallest-screen">
+                <i className="post-ad__icon fa fa-plus-circle"></i> Post Ad FREE
+              </button>
+            </NavLink>
           </div>
         </ul>
       </nav>
