@@ -75,3 +75,27 @@
     display: none;
   }
 }
+
+.swal2-backdrop-show {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  z-index: 1000000 !important;
+  height: 100vh !important;
+  width: 100% !important;
+  display: grid !important;
+}
+
+.error-message {
+  display: block;
+  top: 1rem;
+  width: 90%;
+  margin: auto;
+  position: absolute;
+  background-color: #f8d7da !important;
+  color: #721c24 !important;
+  font-size: 1.7rem;
+  left: 5%;
+  padding: 0.4rem 1.5rem;
+  border-radius: 0.3rem;
+}

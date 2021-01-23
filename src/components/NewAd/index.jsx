@@ -7,7 +7,7 @@ import Payment from "./payment";
 
 const NewAd = () => {
   const [steps] = useState([<Details />, <Pictures />, <Payment />]);
-  const [step] = useState(1);
+  const [step] = useState(0);
   return (
     <div className="new-ad">
       <Header />

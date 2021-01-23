@@ -1,0 +1,101 @@
+.login {
+  &__container {
+    grid-column: 5 / 9;
+    justify-self: center;
+    margin-top: 4rem;
+    width: 50vh;
+    min-width: 45rem;
+    display: flex;
+    flex-direction: column;
+
+    @include respond(tinier) {
+      grid-column: 1 / -1;
+      width: 95%;
+      min-width: 95%;
+    }
+    &__card {
+      padding-top: 2rem;
+      position: relative;
+      & form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      border: 1px solid var(--color-border);
+      margin-bottom: 2rem;
+      &__footer {
+        padding: 1.3rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.3rem;
+        align-items: center;
+        border: 1px solid var(--color-border);
+        background-color: rgba(0, 0, 0, 0.03);
+
+        & div {
+          color: var(--color-headings);
+        }
+
+        & a,
+        &:link,
+        & a:visited {
+          text-decoration: none;
+          color: var(--color-primary-dark);
+        }
+      }
+    }
+
+    & p,
+    & a {
+      align-self: center;
+    }
+
+    & p {
+      font-size: 1.4rem;
+      color: var(--color-headings);
+    }
+
+    & > a,
+    & > a:visited,
+    & > a:link {
+      text-decoration: none;
+      color: black;
+      font-weight: bold;
+      font-size: 1.5rem;
+      color: var(--color-primary-dark);
+      margin-bottom: 5rem;
+    }
+  }
+
+  &__button {
+    width: 100%;
+    margin: 2rem 0;
+    font-size: 1.6rem;
+    padding: 0.9rem 0;
+    border: none;
+    background-color: var(--color-danger);
+    color: white;
+    border-radius: 0.4rem;
+    transition: all 0.3s;
+    &:focus {
+      outline: none;
+    }
+
+    &--loading {
+      & span {
+        display: none;
+      }
+      width: 4rem !important;
+      height: 4rem !important;
+      padding: 0 !important;
+      border-radius: 50%;
+      background-color: transparent;
+      border: 0.7rem solid grey;
+      border-top: 0.7rem solid var(--color-danger);
+      border-right: 0.7rem solid var(--color-danger);
+      border-left: 0.7rem solid var(--color-danger);
+
+      animation: spin 0.8s 0.3s infinite linear;
+    }
+  }
+}

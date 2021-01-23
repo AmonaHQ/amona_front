@@ -5,6 +5,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import Header from "../../Commons/header";
 import Footer from "../../Commons/footer";
 import Validator from "../../Commons/validator";
+import { useAuthToken } from "../../../token";
 import { useRegistrationMutation } from "../../../operations/mutaions";
 import { loginState } from "../../../recoil/atoms";
 
@@ -15,6 +16,7 @@ const Registration = () => {
   const [inputData, setInputData] = useState({});
   const [createUser, { loading, error, data }] = useRegistrationMutation();
   const [, setIsLoggedIn] = useRecoilState(loginState);
+  const [authToken] = useAuthToken();
 
   useEffect(() => {}, []);
   const handleChange = (event) => {
@@ -40,7 +42,9 @@ const Registration = () => {
     localStorage.setItem("authToken", data.signUp.firstName);
     return <Redirect loggedIn to="/account" />;
   }
-
+  if (authToken) {
+    return <Redirect loggedIn to="/account" />;
+  }
   return (
     <div className="register">
       <Header />

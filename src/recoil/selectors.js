@@ -1,5 +1,11 @@
 import { selector } from "recoil";
-import { loginState, menuState } from "./atoms";
+import {
+  loginState,
+  menuState,
+  loginModalState,
+  userDetailsState,
+  imageUploadType,
+} from "./atoms";
 
 const currentLoginState = selector({
   key: "currentLoginState",
@@ -12,4 +18,26 @@ const currentMenuState = selector({
   key: "currentMenuState",
   get: ({ get }) => get(menuState),
 });
-export { currentLoginState, currentMenuState };
+
+const currentLoginModalState = selector({
+  key: "currentModalState",
+  get: ({ get }) => get(loginModalState),
+});
+
+const currentUserDetails = selector({
+  key: "currentUserDetails",
+  get: ({ get }) => get(userDetailsState),
+});
+
+const currentImageUploadType = selector({
+  key: "currentUserDetails",
+  get: ({ get }) => get(imageUploadType),
+});
+
+export {
+  currentLoginState,
+  currentMenuState,
+  currentLoginModalState,
+  currentUserDetails,
+  currentImageUploadType
+};

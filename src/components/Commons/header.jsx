@@ -1,17 +1,24 @@
 import React, { useState, useEffect, useRef } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, Redirect } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { loginState } from "../../recoil/atoms";
+import { menuState } from "../../recoil/atoms";
+import { currentUserDetails } from "../../recoil/selectors";
+import { loginState, loginModalState, userDetailsState } from "../../recoil/atoms";
 import logo from "../../assets/img/cheapcars.png";
 import Overlay from "./overlay";
-import { useAuthToken } from "../../token";
+import { useAuthToken, verifyToken } from "../../token";
+import { useRecoilValue } from "recoil";
 
 const Header = (props) => {
   const [checked, setChecked] = useState(false);
-  const [modalShow, setModalShow] = useState(false);
+  const [modalShow, setModalShow] = useRecoilState(loginModalState);
   const [showHeader, setShowHeader] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(loginState);
   const [authToken, , eraseCookie] = useAuthToken();
+  const [menuChecked, setMenuChecked] = useState(false);
+  const [firstName, setFirstName] = useState("User");
+  const [user] = useRecoilState(userDetailsState);
+  const [, setMenu] = useRecoilState(menuState);
   const [height] = useState(isLoggedIn || authToken ? "49rem" : "15rem");
 
   const listRef = useRef();
@@ -23,6 +30,20 @@ const Header = (props) => {
     setIsLoggedIn(false);
     localStorage.setItem("authToken", null);
   };
+  const changeMenu = (menu) => {
+    setMenuChecked(false);
+    setMenu(menu);
+  };
+  const getName = async () => {
+    const name = await verifyToken(authToken);
+    if (name && name.success) {
+      setFirstName(name.firstName);
+    }
+  };
+  if (firstName === "User" && authToken) {
+    getName();
+  }
+
   useEffect(() => {
     window.addEventListener("scroll", (event) => {
       let scrollHeight = window.pageYOffset;
@@ -63,18 +84,32 @@ const Header = (props) => {
                 <i class="fas fa-sign-out-alt"></i> <span>Log Out</span>
               </NavLink>
             </li>
-            <input type="checkbox" id="user" />
+            <input type="checkbox" id="user" checked={menuChecked} />
             <label htmlFor="user" className="user-options">
-              <li className="header__nav__item">
-                <i className="fa fa-user"></i> <span>Christian</span>
+              <li
+                className="header__nav__item"
+                onClick={() => setMenuChecked(!menuChecked)}
+              >
+                <i className="fa fa-user"></i>{" "}
+                <span>{user.firstName || firstName}</span>
               </li>
 
               <ul className="header__nav__user__list">
-                <li className="header__nav__user__item">
-                  <i className="fa fa-home"></i> <span>Personal Home</span>
+                <li
+                  className="header__nav__user__item"
+                  onClick={() => changeMenu({ index: 0 })}
+                >
+                  <NavLink to="/account">
+                    <i className="fa fa-home"></i> <span>Personal Home</span>
+                  </NavLink>
                 </li>
-                <li className="header__nav__user__item">
-                  <i class="far fa-images"></i> <span>My ads</span>{" "}
+                <li
+                  className="header__nav__user__item"
+                  onClick={() => changeMenu({ index: 1 })}
+                >
+                  <NavLink to="/account">
+                    <i className="far fa-images"></i> <span>My Ads</span>
+                  </NavLink>
                 </li>
                 <li className="header__nav__user__item">
                   <i class="fas fa-heart"></i> <span>Favorite ads</span>{" "}

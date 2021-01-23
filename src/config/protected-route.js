@@ -8,7 +8,6 @@ export const ProtectedRoute = ({ component: Component, ...rest }) => {
   const [authToken] = useAuthToken();
   const isLoggedIn = useRecoilValue(currentLoginState);
   const token = localStorage.getItem("authToken");
-  console.log("auth", authToken, "isLogedIn", isLoggedIn, "token", token);
   return (
     <Route
       {...rest}
@@ -19,7 +18,7 @@ export const ProtectedRoute = ({ component: Component, ...rest }) => {
           return (
             <Redirect
               to={{
-                pathname: "/registration",
+                pathname: "/login",
                 state: { from: props.location },
               }}
             />

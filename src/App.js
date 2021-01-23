@@ -8,6 +8,7 @@ import AddDetails from "./components/AdDetails/index";
 import Registration from "./components/Authentication/Registration/index";
 import NewAd from "./components/NewAd/index";
 import Dashboard from "./components/Dashboard/index";
+import Login from "./components/Authentication/Login/index"
 import { ProtectedRoute } from "./config/protected-route";
 function App() {
   return (
@@ -19,6 +20,8 @@ function App() {
               <Route exact path="/" component={Home}></Route>
               <Route exact path="/ads" component={AllAds}></Route>{" "}
               <Route exact path="/ads/details" component={AddDetails}></Route>
+              <Route exact path="/login" component={Login}></Route>
+
               <Route
                 exact
                 path="/registration"

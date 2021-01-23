@@ -33,8 +33,6 @@
     width: 100%;
     position: relative;
     overflow: hidden !important;
-    
-    
   }
   &__pictures {
     width: 100% !important;
@@ -52,6 +50,27 @@
     margin-top: 2rem;
     transition: all 0.3s;
     justify-self: center;
+    &:focus {
+      outline: none !important;
+    }
+    &--loading {
+      & span {
+        display: none;
+      }
+      height: 4.2rem;
+      width: 4.2rem;
+      border-radius: 50%;
+      padding: 0 !important;
+      border: 0.6rem solid rgb(197, 194, 194);
+      border-top: 0.6rem solid var(--color-danger);
+      border-right: 0.6rem solid var(--color-danger);
+      background-color: transparent;
+      animation: spin 0.7s infinite linear;
+
+      &:hover {
+        background-color: unset !important;
+      }
+    }
 
     &:hover {
       background-color: var(--color-danger-light);

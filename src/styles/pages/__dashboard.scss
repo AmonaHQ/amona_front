@@ -10,7 +10,6 @@
   }
   @include respond(tiny) {
     grid-template-columns: repeat(12, 1fr);
- 
   }
   & .header {
     background-color: #f8f9fa;
