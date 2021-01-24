@@ -2,12 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { NavLink, Redirect } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { menuState } from "../../recoil/atoms";
-import { currentUserDetails } from "../../recoil/selectors";
 import { loginState, loginModalState, userDetailsState } from "../../recoil/atoms";
 import logo from "../../assets/img/cheapcars.png";
 import Overlay from "./overlay";
 import { useAuthToken, verifyToken } from "../../token";
-import { useRecoilValue } from "recoil";
 
 const Header = (props) => {
   const [checked, setChecked] = useState(false);

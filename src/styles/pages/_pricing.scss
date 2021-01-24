@@ -1,0 +1,11 @@
+.pricing {
+    display: grid;
+    grid-template-columns: repeat((12, 1fr));
+    grid-template-rows: 9rem repeat(auto-fit, minmax(9rem, min-content));
+    background-color: #fff;
+
+    & .header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid rgb(238, 233, 233);
+      }
+}

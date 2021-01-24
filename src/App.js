@@ -8,33 +8,40 @@ import AddDetails from "./components/AdDetails/index";
 import Registration from "./components/Authentication/Registration/index";
 import NewAd from "./components/NewAd/index";
 import Dashboard from "./components/Dashboard/index";
-import Login from "./components/Authentication/Login/index"
+import Login from "./components/Authentication/Login/index";
+import Pricing from "./components/NewAd/Pricing/index";
 import { ProtectedRoute } from "./config/protected-route";
+
+
 function App() {
   return (
     <CookiesProvider>
       <RecoilRoot>
         <Fragment>
           <BrowserRouter>
-            <Switch>
-              <Route exact path="/" component={Home}></Route>
-              <Route exact path="/ads" component={AllAds}></Route>{" "}
-              <Route exact path="/ads/details" component={AddDetails}></Route>
-              <Route exact path="/login" component={Login}></Route>
-
-              <Route
-                exact
-                path="/registration"
-                component={Registration}
-              ></Route>
-              <Route exact path="/ads/new" component={NewAd}></Route>
-              <ProtectedRoute
-                exact
-                path="/account"
-                component={Dashboard}
-              ></ProtectedRoute>
-            </Switch>
-
+            
+              <Switch>
+                <Route exact path="/" component={Home}></Route>
+                <Route exact path="/ads" component={AllAds}></Route>{" "}
+                <Route exact path="/ads/details" component={AddDetails}></Route>
+                <Route exact path="/login" component={Login}></Route>
+                <Route
+                  exact
+                  path="/ads/new/pricing"
+                  component={Pricing}
+                ></Route>
+                <Route
+                  exact
+                  path="/registration"
+                  component={Registration}
+                ></Route>
+                <Route exact path="/ads/new" component={NewAd}></Route>
+                <ProtectedRoute
+                  exact
+                  path="/account"
+                  component={Dashboard}
+                ></ProtectedRoute>
+              </Switch>
           </BrowserRouter>
         </Fragment>
       </RecoilRoot>

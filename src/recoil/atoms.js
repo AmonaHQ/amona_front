@@ -41,6 +41,15 @@ const deleteProfileImageState = atom({
   default: false,
 });
 
+const planState = atom({
+  key: "planState",
+  default: null,
+});
+
+const redirectionState = atom({
+  key: "redirectionState",
+  default: null,
+});
 
 export {
   loginState,
@@ -50,5 +59,7 @@ export {
   imageUploadState,
   imageUploadType,
   showWarningState,
-  deleteProfileImageState
+  deleteProfileImageState,
+  planState,
+  redirectionState
 };

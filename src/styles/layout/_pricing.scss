@@ -1,0 +1,94 @@
+.pricing {
+  &__container {
+    grid-column: 3/11;
+    display: grid;
+    justify-items: center;
+    margin-top: 3rem;
+    grid-template-columns: repeat((auto-fit, minmax(28rem, 1fr)));
+    grid-column-gap: 2rem;
+    margin-bottom: 8rem;
+
+    @include respond(micro-large) {
+      grid-column: 2/12;
+    }
+
+    &__title {
+      color: var(--color-headings);
+      font-size: 3.5rem;
+      grid-column: 1/-1;
+    }
+    &__sub-title {
+      color: var(--color-headings);
+      font-size: 1.3rem;
+      grid-column: 1/-1;
+      text-align: center;
+      line-height: 1.5;
+    }
+    &__card {
+      border: 1px solid var(--color-border);
+      justify-self: stretch;
+      display: flex;
+      flex-direction: column;
+      margin-top: 3rem;
+      height: fit-content;
+
+      &__header {
+        padding: 1rem 0;
+        font-size: 2.3rem;
+        border-bottom: 1px solid var(--color-border);
+        color: var(--color-headings);
+        background-color: #f7f7f7;
+        display: flex;
+        justify-content: center;
+      }
+
+      &__price {
+        align-self: center;
+        margin-top: 2rem;
+        font-size: 2.8rem;
+
+        & span:not(:last-child) {
+          color: var(--color-headings);
+          margin-left: 1rem;
+          font-weight: 700;
+        }
+      }
+
+      &__features {
+        margin-top: 2rem;
+        list-style: none;
+        font-size: 1.4rem;
+        padding: 0 2rem;
+
+        & li {
+          padding-bottom: 1rem;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          margin-bottom: 1rem;
+          border-bottom: 1px solid var(--color-border);
+          color: var(--color-headings);
+        }
+      }
+
+      &__button {
+        width: 90%;
+        align-self: center;
+        padding: 1.3rem;
+        border: 1px solid #028e7b;
+        color: #028e7b;
+        margin: 2.3rem auto;
+        border-radius: 0.4rem;
+        font-size: 1.7rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+
+        &:hover {
+          background-color: #028e7b !important;
+          color: white;
+        }
+      }
+    }
+  }
+}

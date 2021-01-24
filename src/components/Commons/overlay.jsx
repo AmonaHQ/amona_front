@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
+import { Redirect } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { useLoginQuery } from "../../operations/queries";
 import { loginModalState, userDetailsState } from "../../recoil/atoms";
 import { useRecoilState } from "recoil";
+import { redirectionState } from "../../recoil/atoms";
 
 const Overlay = (props) => {
   const [modalShow, setModalShow] = useRecoilState(loginModalState);
   const [inputData, setInputData] = useRecoilState(userDetailsState);
   const [login, { loading, data, error }] = useLoginQuery();
+  const [redirection] = useRecoilState(redirectionState);
 
   const handleChange = (event) => {
     const data = { ...inputData };
@@ -21,6 +24,16 @@ const Overlay = (props) => {
   };
   if (data && data.signIn) {
     setModalShow(false);
+    if (redirection) {
+      return (
+        <Redirect
+          to={{
+            pathname: "/ads/new",
+            state: { type: "Urgent" },
+          }}
+        />
+      );
+    }
   }
   if (error) {
     console.log("this is error", error.graphQLError);
@@ -89,7 +102,9 @@ const Overlay = (props) => {
               </div>
               <div className="form__bottom__links">
                 <a href="/">Lost your password ?</a> <span>&nbsp;/&nbsp;</span>{" "}
-                <NavLink to="/registration">Register</NavLink>
+                <NavLink onClick={() => setModalShow(false)} to="/registration">
+                  Register
+                </NavLink>
               </div>
             </div>
             <div className="form__captcha form__captcha--login">

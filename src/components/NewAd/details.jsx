@@ -2,7 +2,10 @@ import React from "react";
 import SunEditor from "suneditor-react";
 import ReCAPTCHA from "react-google-recaptcha";
 import buttonList from "../../constants/button-list";
+import DropSearch from "../Commons/drop-search";
 import "suneditor/dist/css/suneditor.min.css"; // Import Sun Editor's CSS File
+
+import { make } from "../../constants/search";
 const Details = () => {
   return (
     <>
@@ -52,6 +55,18 @@ const Details = () => {
               buttonList,
             }}
           />
+        </div>
+        <div className="formGroup">
+          <label htmlFor="" className="formGroup__label">
+            Make
+          </label>
+          <div className="formGroup__inputs__single formGroup__inputs__single--drop-search">
+            <DropSearch
+              data={make}
+              identifier="make"
+              onSelect={(item) => console.log("selected", item)}
+            />
+          </div>
         </div>
         <div className="formGroup">
           <label htmlFor="" className="formGroup__label">
@@ -141,6 +156,7 @@ const Details = () => {
             />
           </div>
         </div>
+
         <div className="form__captcha">
           <ReCAPTCHA
             sitekey="6LdEVBsaAAAAAHx5BRsT0nG5Pm5kBFXGKYxq5ULu"

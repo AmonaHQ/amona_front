@@ -107,8 +107,9 @@ const Loaded = ({ data }) => {
   };
   useEffect(() => {
     const getData = async () => {
-      const data = await Axios.get(
-        "https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformake/honda?format=json"
+      const data = await Axios.post(
+        "https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVINValuesBatch/",
+        {DATA:"WVWJK73C49P057268"}
       );
       console.log("data", data);
     };

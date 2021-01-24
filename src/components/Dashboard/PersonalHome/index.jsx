@@ -6,7 +6,7 @@ import Skeleton from "./skeleton";
 const PersonalHome = () => {
   const { data, loading } = useUserQuery();
 
-  return <>{loading ? <Skeleton /> : <Loaded data={data.getUser} />}</>;
+  return <>{loading && !data ? <Skeleton /> : <Loaded data={data.getUser} />}</>;
 };
 
 export default PersonalHome;
