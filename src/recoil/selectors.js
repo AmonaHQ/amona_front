@@ -1,10 +1,12 @@
 import { selector } from "recoil";
+import Axios from "axios";
 import {
   loginState,
   menuState,
   loginModalState,
   userDetailsState,
   imageUploadType,
+  vehicleMakeState,
 } from "./atoms";
 
 const currentLoginState = selector({
@@ -34,10 +36,15 @@ const currentImageUploadType = selector({
   get: ({ get }) => get(imageUploadType),
 });
 
+const vehicleMakes = selector({
+  key: "vehicleMake",
+  get: async ({ get }) => get(vehicleMakeState),
+});
 export {
   currentLoginState,
   currentMenuState,
   currentLoginModalState,
   currentUserDetails,
-  currentImageUploadType
+  currentImageUploadType,
+  vehicleMakes,
 };

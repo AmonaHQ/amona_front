@@ -50,6 +50,19 @@ const redirectionState = atom({
   key: "redirectionState",
   default: null,
 });
+const vehicleMakeState = atom({
+  key: "vehicleMakeState",
+  default: [],
+});
+
+const vehicleModelState = atom({
+  key: "vehicleModelState",
+  default: [],
+});
+const busyOverlayState = atom({
+  key: "busyOverlayState",
+  default: false,
+});
 
 export {
   loginState,
@@ -61,5 +74,8 @@ export {
   showWarningState,
   deleteProfileImageState,
   planState,
-  redirectionState
+  redirectionState,
+  vehicleMakeState,
+  busyOverlayState,
+  vehicleModelState,
 };

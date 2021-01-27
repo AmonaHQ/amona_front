@@ -1,12 +1,40 @@
-import React from "react";
+import React, { useEffect } from "react";
 import SunEditor from "suneditor-react";
 import ReCAPTCHA from "react-google-recaptcha";
+import Autocomplete from "react-google-autocomplete";
+import { useRecoilState } from "recoil";
 import buttonList from "../../constants/button-list";
 import DropSearch from "../Commons/drop-search";
 import "suneditor/dist/css/suneditor.min.css"; // Import Sun Editor's CSS File
+import {
+  useGetVehicleMake,
+  useGetVehicleModel,
+} from "../../services/cars.service";
+import { vehicleMakeState, vehicleModelState } from "../../recoil/atoms";
+import spring from "../../svgs/spring.svg";
+import { categoriesWithIcons } from "../../constants/categories";
 
-import { make } from "../../constants/search";
 const Details = () => {
+  const [getMake] = useGetVehicleMake();
+  const [getModel] = useGetVehicleModel();
+  const [make] = useRecoilState(vehicleMakeState);
+  const [model, setModel] = useRecoilState(vehicleModelState);
+
+  const getVehicleMake = async (keyword) => {
+    return await getMake(keyword);
+  };
+
+  const handleMakeSelection = async (make) => {
+    const model = await getModel(make.Make_ID);
+    console.log("it is a model", model);
+    if (model) {
+      setModel(model);
+    }
+  };
+
+  useEffect(() => {
+    getVehicleMake("toy");
+  }, []);
   return (
     <>
       <div className="register__main__heading">
@@ -18,12 +46,14 @@ const Details = () => {
           <label htmlFor="" className="formGroup__label">
             Category
           </label>
-          <div className="formGroup__inputs__double">
-            <i className="fa fa-user"></i>
-            <input
-              type="text"
-              className="formGroup__input"
-              placeholder="Select Vehicle Type"
+          <div className="formGroup__inputs__single formGroup__inputs__single--drop-search">
+            <DropSearch
+              identifier="title"
+              onSelect={() => {}}
+              data={categoriesWithIcons}
+              inputId="category"
+              showItems={true}
+              placeholder="Choose category"
             />
           </div>
         </div>
@@ -57,14 +87,32 @@ const Details = () => {
           />
         </div>
         <div className="formGroup">
-          <label htmlFor="" className="formGroup__label">
+          <label htmlFor="make" className="formGroup__label">
             Make
           </label>
           <div className="formGroup__inputs__single formGroup__inputs__single--drop-search">
             <DropSearch
+              identifier="Make_Name"
+              onSelect={(item) => handleMakeSelection(item)}
+              handleChange={getVehicleMake}
               data={make}
-              identifier="make"
-              onSelect={(item) => console.log("selected", item)}
+              inputId="make"
+              placeholder="Select vehicle make"
+            />
+          </div>
+        </div>
+        <div className="formGroup">
+          <label htmlFor="model" className="formGroup__label">
+            Model
+          </label>
+          <div className="formGroup__inputs__single formGroup__inputs__single--drop-search">
+            <DropSearch
+              identifier="Model_Name"
+              onSelect={(item) => handleMakeSelection(item)}
+              data={model}
+              inputId="model"
+              placeholder="Select vehicle model"
+              disable={!model.length}
             />
           </div>
         </div>
@@ -89,17 +137,20 @@ const Details = () => {
               </label>
             </div>
           </div>
-        </div>
+        </div>{" "}
         <div className="formGroup">
           <label htmlFor="" className="formGroup__label">
             City
           </label>
-          <div className="formGroup__inputs__double">
-            <i class="fas fa-map-marker"></i>
-            <input
-              type="text"
-              className="formGroup__input"
-              placeholder="Select City"
+
+          <div className="formGroup__inputs__single">
+            <Autocomplete
+              style={{ width: "90%" }}
+              onPlaceSelected={(place) => {
+                console.log(place);
+              }}
+              types={["geocode"]}
+              componentRestrictions={{ country: "ng" }}
             />
           </div>
         </div>
@@ -116,7 +167,6 @@ const Details = () => {
             />
           </div>
         </div>
-
         <div className="form__heading">
           <i class="fas fa-user"></i>
           <h2 className="h2"> Seller information</h2>
@@ -156,7 +206,6 @@ const Details = () => {
             />
           </div>
         </div>
-
         <div className="form__captcha">
           <ReCAPTCHA
             sitekey="6LdEVBsaAAAAAHx5BRsT0nG5Pm5kBFXGKYxq5ULu"
