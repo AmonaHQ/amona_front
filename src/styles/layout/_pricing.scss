@@ -40,12 +40,26 @@
         background-color: #f7f7f7;
         display: flex;
         justify-content: center;
+
+        &--skeleton {
+          background-color: #fff;
+          height: 2.7rem;
+          width: 30%;
+          animation: glow-white 2s infinite linear;
+        }
       }
 
       &__price {
         align-self: center;
         margin-top: 2rem;
         font-size: 2.8rem;
+
+        &--skeleton {
+          background-color: #f7f7f7;
+          height: 3.4rem;
+          width: 15rem;
+          animation: glow 2s infinite linear;
+        }
 
         & span:not(:last-child) {
           color: var(--color-headings);
@@ -60,6 +74,14 @@
         font-size: 1.4rem;
         padding: 0 2rem;
 
+        & ~ a {
+           &:visited, &:link {
+          text-decoration: none !important;
+        }
+        }
+
+       
+
         & li {
           padding-bottom: 1rem;
           display: flex;
@@ -68,6 +90,15 @@
           margin-bottom: 1rem;
           border-bottom: 1px solid var(--color-border);
           color: var(--color-headings);
+        }
+        &--skeleton {
+          background-color: #f7f7f7;
+          height: 1.2rem;
+          width: 80%;
+          margin: auto;
+          margin-bottom: 2.5rem !important;
+          border-bottom: 0 !important;
+          animation: glow 2s infinite linear;
         }
       }
 
@@ -87,6 +118,16 @@
         &:hover {
           background-color: #028e7b !important;
           color: white;
+        }
+
+        &--skeleton {
+          border: none;
+          background-color: #f7f7f7;
+          padding-top: 3.5rem;
+          animation: glow 2s infinite linear;
+          &:hover {
+            background-color: #f7f7f7 !important;
+          }
         }
       }
     }

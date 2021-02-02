@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { NavLink, Redirect } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { menuState } from "../../recoil/atoms";
 import { loginState, loginModalState, userDetailsState } from "../../recoil/atoms";

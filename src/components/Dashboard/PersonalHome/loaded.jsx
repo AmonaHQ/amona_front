@@ -1,17 +1,15 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { useAlert } from "react-alert";
 import { useRecoilState, useRecoilValue } from "recoil";
 import defaultProfileImage from "../../../assets/img/icons/user.jpg";
 import {
   useUpdateUserMutation,
   useFileMutation,
   useDeleteImageMutation,
-} from "../../../operations/mutaions";
+} from "../../../operations/mutations";
 import { useImageQuery } from "../../../operations/queries";
 import Validator from "../../Commons/validator";
 import { storage } from "../../../firebase/firebase";
-import { useAuthToken } from "../../../token";
 import {
   imageUploadState,
   showWarningState,
@@ -20,7 +18,6 @@ import {
 import { currentImageUploadType } from "../../../recoil/selectors";
 import Warning from "../../Commons/warning";
 import "sweetalert2/src/sweetalert2.scss";
-import Axios from "axios";
 
 const Loaded = ({ data }) => {
   const [, setModalShow] = useRecoilState(showWarningState);
@@ -30,57 +27,56 @@ const Loaded = ({ data }) => {
   const [progress, setProgress] = useState("0%");
   const [uploading, setUploading] = useRecoilState(imageUploadState);
   const [progressText, setProgressText] = useState("Click or drag file");
-  const [, , , getId] = useAuthToken();
   const [uploadFile, uploadFileResult] = useFileMutation();
   const [deleteFile, deleteFileResult] = useDeleteImageMutation();
 
   const profileImage = useImageQuery();
 
-  const onDrop = useCallback((acceptedFiles) => {
-    setProgressText("Uploading...");
-    setProgress("0%");
-    setUploading(true);
-    setDeleteState(false);
-    const file = acceptedFiles[0];
-    const uploadTask = storage.ref(`/images/${file.name}`).put(file);
-    uploadTask.on(
-      "state_changed",
-      (snapShot) => {
-        const progress =
-          Math.round(snapShot.bytesTransferred / snapShot.totalBytes) * 100;
-        setProgress(`${progress}%`);
-        console.log("Upload is " + progress + "% done");
-      },
-      (err) => {
-        console.log(err);
-      },
-      () => {
-        storage
-          .ref("images")
-          .child(file.name)
-          .getDownloadURL()
-          .then((fireBaseUrl) => {
-            console.log("image url", fireBaseUrl);
-            uploadFile({
-              fileName: file.name,
-              url: fireBaseUrl,
-            });
+  const onDrop = useCallback(
+    (acceptedFiles) => {
+      setProgressText("Uploading...");
+      setProgress("0%");
+      setUploading(true);
+      setDeleteState(false);
+      const file = acceptedFiles[0];
+      const uploadTask = storage.ref(`/images/${file.name}`).put(file);
+      uploadTask.on(
+        "state_changed",
+        (snapShot) => {
+          const progress =
+            Math.round(snapShot.bytesTransferred / snapShot.totalBytes) * 100;
+          setProgress(`${progress}%`);
+          console.log("Upload is " + progress + "% done");
+        },
+        (err) => {
+          console.log(err);
+        },
+        () => {
+          storage
+            .ref("images")
+            .child(file.name)
+            .getDownloadURL()
+            .then((fireBaseUrl) => {
+              console.log("image url", fireBaseUrl);
+              uploadFile({
+                fileName: file.name,
+                url: fireBaseUrl,
+              });
 
-            setProgressText("Saving...");
-          });
-      }
-    );
-  }, []);
+              setProgressText("Saving...");
+            });
+        }
+      );
+    },
+    [setDeleteState, setUploading, uploadFile]
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
   });
   const [inputData, setInputData] = useState({});
 
-  const [
-    updateUser,
-    { error, loading, data: updateData },
-  ] = useUpdateUserMutation();
+  const [updateUser, { error, loading }] = useUpdateUserMutation();
 
   const [errorMessages, setErrorMessages] = useState({});
   const [disabledButton, setDisableButton] = useState(false);
@@ -106,16 +102,8 @@ const Loaded = ({ data }) => {
     deleteFile();
   };
   useEffect(() => {
-    const getData = async () => {
-      const data = await Axios.post(
-        "https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVINValuesBatch/",
-        {DATA:"WVWJK73C49P057268"}
-      );
-      console.log("data", data);
-    };
-    getData();
     setInputData(data);
-  }, []);
+  }, [data]);
 
   return (
     <>
@@ -223,10 +211,9 @@ const Loaded = ({ data }) => {
                     <div className="dashboard__main__profile__photo__body__img__background__menu">
                       <i className="fa fa-pencil"></i>
                       <i
-                        className={`${deleteFileResult.loading && "deleting"}`}
+                        className={`fa fa-trash ${deleteFileResult.loading && "deleting"}`}
                         onMouseOver={() => setCanSelect(false)}
                         onMouseLeave={() => setCanSelect(true)}
-                        className="fa fa-trash"
                         onClick={() => setModalShow(true)}
                       ></i>
                     </div>

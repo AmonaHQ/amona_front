@@ -1,14 +1,9 @@
-import React, { useState, useEffect } from "react";
-import ReCAPTCHA from "react-google-recaptcha";
-import { NavLink } from "react-router-dom";
-import { useLoginQuery } from "../../operations/queries";
-import { showWarningState, userDetailsState } from "../../recoil/atoms";
+import React from "react";
+import { showWarningState } from "../../recoil/atoms";
 import { useRecoilState } from "recoil";
 
 const Overlay = ({ callback }) => {
   const [modalShow, setModalShow] = useRecoilState(showWarningState);
-  const [inputData, setInputData] = useRecoilState(userDetailsState);
-  const [login, { loading, data, error }] = useLoginQuery();
 
   const handleDelete = () => {
     setModalShow(false)

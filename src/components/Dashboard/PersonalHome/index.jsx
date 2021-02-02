@@ -1,5 +1,5 @@
 import React from "react";
-import { useUserQuery, useLogin as login } from "../../../operations/queries";
+import { useUserQuery} from "../../../operations/queries";
 import Loaded from "./loaded";
 import Skeleton from "./skeleton";
 

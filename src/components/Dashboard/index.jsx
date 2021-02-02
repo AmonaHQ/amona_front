@@ -7,6 +7,7 @@ import Footer from "../Commons/footer";
 import PersonalHome from "./PersonalHome";
 import MyAds from "./my-ads";
 import Sidebar from "./sidebar";
+import ScrollTop from "../../utilities/scroll-top"
 
 const Dashboard = () => {
   const menu = useRecoilValue(currentMenuState);
@@ -27,6 +28,7 @@ const Dashboard = () => {
       </div>
 
       <Footer />
+      <ScrollTop/>
     </div>
   );
 };

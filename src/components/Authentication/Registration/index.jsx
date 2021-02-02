@@ -6,7 +6,7 @@ import Header from "../../Commons/header";
 import Footer from "../../Commons/footer";
 import Validator from "../../Commons/validator";
 import { useAuthToken } from "../../../token";
-import { useRegistrationMutation } from "../../../operations/mutaions";
+import { useRegistrationMutation } from "../../../operations/mutations";
 import { loginState } from "../../../recoil/atoms";
 
 const Registration = () => {

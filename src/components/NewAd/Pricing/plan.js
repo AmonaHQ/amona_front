@@ -72,10 +72,10 @@ const plans = [
     currencySymbol: "₦",
     price: 75000,
     highlight: {
-        header:"#028e7b",
-        headerColor:"#fff",
-        button:"#EA280A",
-        buttonColor:"#FFF"
+      header: "#028e7b",
+      headerColor: "#fff",
+      button: "#EA280A",
+      buttonColor: "#FFF",
     },
     features: [
       "120 days of promotion",

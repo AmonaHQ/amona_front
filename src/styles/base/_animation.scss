@@ -115,3 +115,32 @@
     transform: scale(0.95);
   }
 }
+
+@keyframes glow {
+  0% {
+    background-color: #eeeded;
+    opacity: .4;
+  }
+  50% {
+    background-color: #eeeded;
+    opacity: 1;
+  }
+  100% {
+    background-color: #eeeded;
+    opacity: .4;
+  }
+}
+@keyframes glow-white {
+  0% {
+    background-color: #fff;
+    opacity: .4;
+  }
+  50% {
+    background-color: #fff;
+    opacity: 1;
+  }
+  100% {
+    background-color: #fff;
+    opacity: .4;
+  }
+}

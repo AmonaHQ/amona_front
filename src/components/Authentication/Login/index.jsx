@@ -12,7 +12,7 @@ import { useAuthToken } from "../../../token";
 const Login = () => {
   const [authToken] = useAuthToken();
   const [inputData, setInputData] = useRecoilState(userDetailsState);
-  const [login, { loading, data, error }] = useLoginQuery();
+  const [login, { loading, error }] = useLoginQuery();
 
   const handleChange = (event) => {
     const data = { ...inputData };

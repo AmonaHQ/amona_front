@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import ReactTooltip from "react-tooltip";
+import ScrollTop from "../../utilities/scroll-top";
+
 const Details = () => {
   const [ads] = useState([
     {
@@ -49,6 +51,7 @@ const Details = () => {
   ]);
   return (
     <>
+      <ScrollTop />
       <div className="register__main__heading">
         <i class="fas fa-tag new-ad__main__heading__icon"></i>
         <h1 className="h1">Pricing</h1>

@@ -7,14 +7,18 @@ import Details from "./details";
 import Pictures from "./pictures";
 import Payment from "./payment";
 import { useAuthToken } from "../../token";
-import { redirectionState } from "../../recoil/atoms";
+import { redirectionState, adDetailsProgressState } from "../../recoil/atoms";
 
 const NewAd = (props) => {
-  const [steps] = useState([<Details />, <Pictures />, <Payment />]);
-  const [step] = useState(0);
+  const [steps] = useState([
+    <Details />,
+    <Pictures plan={props.location.state} />,
+    <Payment plan={props.location.state} />,
+  ]);
   const location = useLocation();
   const [authToken] = useAuthToken();
   const [, setRedirect] = useRecoilState(redirectionState);
+  const [step] = useRecoilState(adDetailsProgressState);
 
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
@@ -22,7 +26,9 @@ const NewAd = (props) => {
 
   useEffect(() => {
     setRedirect(null);
-  }, []);
+  }, [setRedirect]);
+
+  console.log("props", props.location.state);
   if (!props.location.state) {
     return <Redirect loggedIn to="/ads/new/pricing" />;
   }
@@ -35,7 +41,9 @@ const NewAd = (props) => {
         <div className="new-ad__steps">
           <div className="new-ad__steps__step">Details</div>
           <div className="new-ad__steps__step">Photos</div>
-          <div className="new-ad__steps__step">Payment</div>
+          {props.location.state && props.location.state.price > 0 && (
+            <div className="new-ad__steps__step">Payment</div>
+          )}
           <div className="new-ad__steps__step">Finish</div>
         </div>
 

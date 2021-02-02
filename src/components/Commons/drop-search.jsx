@@ -8,29 +8,49 @@ const DropSearch = ({
   showItems,
   placeholder,
   disable,
+  name,
+  async,
+  onChange,
+  inputType,
 }) => {
   const [display, setDisplay] = useState("");
   const [dropDownData, setDropDownData] = useState([]);
   const [delay] = useState(1000);
   const [rawData, setRawData] = useState([]);
   const inputRef = useRef();
-  const [show, setShowItems] = useState(false);
+
+  const convertResult = {
+    integer: (input) => {
+      return parseInt(input, 10);
+    },
+  };
 
   const handleClick = (item) => {
     setDisplay(item);
-    onSelect(item);
+    onSelect(item, identifier, name, inputType && convertResult[inputType]);
   };
-  const sortAlphabetically = (objArray) => {
-    return objArray.sort((a, b) => a[identifier].localeCompare(b[identifier]));
-  };
+  // const sortAlphabetically = (objArray) => {
+  //   return objArray.sort((a, b) => a[identifier].localeCompare(b[identifier]));
+  // };
 
-  const search = (keyword) => {
-    console.log("rawww", data);
-    const result = [];
+  const refineData = (rawData) => {
+    const data = [];
     for (let index = 0; index < rawData.length; index += 1) {
-      const name = rawData[index][identifier].toLowerCase();
+      const item = rawData[index];
+      const foundItem = data.filter((found) => found.Make_ID === item.Make_ID);
+
+      if (!foundItem.length) {
+        data.push(rawData[index]);
+      }
+    }
+    return data;
+  };
+  const search = (keyword, data = rawData) => {
+    const result = [];
+    for (let index = 0; index < data.length; index += 1) {
+      const name = data[index][identifier].toLowerCase();
       if (name.includes(keyword.toLowerCase())) {
-        result.push(rawData[index]);
+        result.push(data[index]);
       }
     }
     if (result.length) {
@@ -39,25 +59,30 @@ const DropSearch = ({
   };
 
   const getResult = async (keyword) => {
-    setTimeout(() => {
-      setDropDownData(search(keyword));
-    }, delay);
+    if (async) {
+      const data = await onChange(keyword);
+      if (data && data.length) {
+        setDropDownData(search(keyword, refineData(data)));
+      }
+    } else {
+      setTimeout(() => {
+        setDropDownData(search(keyword));
+      }, delay);
+    }
   };
 
   useEffect(() => {
     setRawData(data);
     if (showItems) {
-      setDropDownData(search("c"));
+      setDropDownData(data);
     }
-  }, [data]);
+  }, [data, showItems]);
 
-  useEffect(() => {
-    setDropDownData(data);
-  }, [showItems]);
+  useEffect(() => {}, [showItems]);
 
   return (
     <div className="drop-search">
-      <input type={!disable? "checkbox":"text"} id={inputId} />
+      <input type={!disable ? "checkbox" : "text"} id={inputId} />
       <label htmlFor={inputId}>
         <div
           className={`drop-search__display ${disable && "disable-element"}`}
@@ -65,8 +90,8 @@ const DropSearch = ({
         >
           <div className="drop-search__display__result">
             <span className="drop-search__dropdown__item drop-search__dropdown__item--category">
-              {display.icon && (
-                <img src={display.icon} alt={display[identifier]}></img>
+              {display.thumbnail && (
+                <img src={display.thumbnail} alt={display[identifier]}></img>
               )}
               <span>
                 {display[identifier] || (
@@ -95,8 +120,8 @@ const DropSearch = ({
                   className="drop-search__dropdown__item"
                   onClick={() => handleClick(item)}
                 >
-                  {item.icon && (
-                    <img src={item.icon} alt={item[identifier]}></img>
+                  {item.thumbnail && (
+                    <img src={item.thumbnail} alt={item[identifier]}></img>
                   )}
                   <span>{item[identifier]}</span>
                 </li>

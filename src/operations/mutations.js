@@ -8,7 +8,7 @@ import {
   loginState,
   userDetailsState,
   imageUploadState,
-  deleteProfileImageState
+  deleteProfileImageState,busyOverlayState
 } from "../recoil/atoms";
 import { currentImageUploadType } from "../recoil/selectors";
 
@@ -48,7 +48,7 @@ const useRegistrationMutation = () => {
 
 const useUpdateUserMutation = () => {
   const [, setAuthToken, , getId] = useAuthToken();
-  const [_, setUser] = useRecoilState(userDetailsState);
+  const [, setUser] = useRecoilState(userDetailsState);
   const alert = useAlert();
 
   const UPDATE_USER = gql`
@@ -105,7 +105,7 @@ const useUpdateUserMutation = () => {
 };
 
 const useFileMutation = () => {
-  const [_, setUploading] = useRecoilState(imageUploadState);
+  const [, setUploading] = useRecoilState(imageUploadState);
   const [, , , getId] = useAuthToken();
   const type = useRecoilValue(currentImageUploadType);
   const query = {
@@ -142,7 +142,7 @@ const useFileMutation = () => {
 
 const useDeleteImageMutation = () => {
   const [, , , getId] = useAuthToken();
-  const [_, setDeleteState] = useRecoilState(deleteProfileImageState)
+  const [, setDeleteState] = useRecoilState(deleteProfileImageState);
   const alert = useAlert();
   const DELETE_IMAGE = gql`
     mutation deleteImage($input: FindProfileImagetype!) {
@@ -155,7 +155,7 @@ const useDeleteImageMutation = () => {
   const [deleteImage, deleteImageResult] = useMutation(DELETE_IMAGE, {
     errorPolicy: "all",
     onCompleted: (data) => {
-      setDeleteState(true)
+      setDeleteState(true);
       alert.success(
         <div
           className="alerts"
@@ -179,9 +179,41 @@ const useDeleteImageMutation = () => {
 
   return [deleteProfileImage, deleteImageResult];
 };
+
+const useCreateCarMutation = () => {
+  const [, , , getId] = useAuthToken();
+  const [, setIsBusy] = useRecoilState(busyOverlayState);
+  const NEW_CAR = gql`
+    mutation createCar($input: CarInputType!) {
+      createCar(input: $input) {
+        owner
+      }
+    }
+  `;
+
+  const [createCar, createCarResult] = useMutation(NEW_CAR, {
+    errorPolicy: "all",
+    onCompleted: (data) => {
+      if (data.createCar) {
+       setIsBusy(false)
+      }
+    },
+  });
+
+  const createNewCar = (data) => {
+    setIsBusy(true)
+    
+    createCar({
+      variables: { input: {...data, owner: getId("user"), status:"published"} },
+    });
+  };
+
+  return [createNewCar, createCarResult];
+};
 export {
   useRegistrationMutation,
   useUpdateUserMutation,
   useFileMutation,
   useDeleteImageMutation,
+  useCreateCarMutation,
 };

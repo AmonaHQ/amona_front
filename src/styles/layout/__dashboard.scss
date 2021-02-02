@@ -334,7 +334,6 @@
                   opacity: 1;
                   transition: all 0.3s;
 
-                  
                   &:hover {
                     transform: scale(1.1);
                   }
@@ -345,7 +344,7 @@
                     background-color: #d9534f;
 
                     &.deleting {
-                      animation:  spin .5s infinite;
+                      animation: spin 0.5s infinite;
                     }
                   }
                 }

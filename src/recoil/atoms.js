@@ -64,6 +64,16 @@ const busyOverlayState = atom({
   default: false,
 });
 
+const detailsState = atom({
+  key: "detailsState",
+  default: {},
+});
+
+const adDetailsProgressState = atom({
+  key: "adDetailsProgressState",
+  default: 0,
+});
+
 export {
   loginState,
   menuState,
@@ -78,4 +88,6 @@ export {
   vehicleMakeState,
   busyOverlayState,
   vehicleModelState,
+  detailsState,
+  adDetailsProgressState,
 };

@@ -1,12 +1,12 @@
 import React from "react";
 import { useRecoilState } from "recoil";
 import { Link } from "react-router-dom";
-import { redirectionState } from "../../../recoil/atoms";
-import { useAuthToken } from "../../../token";
-import { loginModalState } from "../../../recoil/atoms";
+import { redirectionState } from "../../../../recoil/atoms";
+import { useAuthToken } from "../../../../token";
+import { loginModalState } from "../../../../recoil/atoms";
 
 const PricingCard = ({
-  plan: { type, currencySymbol, price, features, highlight },
+  plan: { type, _id, currencySymbol, price, features, highlights },
 }) => {
   const [, setRedirection] = useRecoilState(redirectionState);
   const [authToken] = useAuthToken();
@@ -23,9 +23,9 @@ const PricingCard = ({
       <div
         className="pricing__container__card__header"
         style={
-          highlight && {
-            backgroundColor: highlight.header,
-            color: highlight.headerColor,
+          highlights && {
+            backgroundColor: highlights.header,
+            color: highlights.headerColor,
           }
         }
       >
@@ -37,22 +37,20 @@ const PricingCard = ({
       </div>
 
       <ul className="pricing__container__card__features">
-        {features.map((feature) => (
-          <li>{feature}</li>
-        ))}
+        {features.length && features.map((feature) => <li>{feature}</li>)}
       </ul>
       <Link
         to={{
           pathname: authToken ? "/ads/new" : "/ads/new/pricing",
-          state: { type },
+          state: { type, planId: _id, price },
         }}
       >
         <div
-          onClick={() => selectPlan(type)}
+          onClick={() => selectPlan()}
           style={
-            highlight && {
-              backgroundColor: highlight.button,
-              color: highlight.buttonColor,
+            highlights && {
+              backgroundColor: highlights.button,
+              color: highlights.buttonColor,
             }
           }
           className="pricing__container__card__button"

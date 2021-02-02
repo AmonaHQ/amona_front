@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import StarRatings from "react-star-ratings";
 import { CarouselProvider, Slider, Slide } from "pure-react-carousel";
-// import gql from "graphql-tag";
-// import { useQuery, useMutation } from "@apollo/react-hooks";
 import Map from "../Commons/map";
 import states from "../../constants/states";
 import posts from "../../constants/sponsored-post";
@@ -12,61 +10,20 @@ import Footer from "../Commons/footer";
 import Post from "../Commons/post";
 import "pure-react-carousel/dist/react-carousel.es.css";
 import categories from "../../constants/categories";
+import ScrollTop from "../../utilities/scroll-top";
 
-// const GET_CATEGORIES = gql`
-//   query allCategories {
-//     categories {
-//       success
-//       status
-//       categories {
-//         title
-//         description
-//         thumbnail
-//       }
-//     }
-//   }
-// `;
 
-// const CREATE_CATEGORIES = gql`
-//   mutation CreateACategory($newCategory: CategoryInputType!) {
-//     createCategory(input: $newCategory) {
-//       _id
-//       title
-//     }
-//   }
-// `;
 
-const Home = () => {
+const Home = (props) => {
   const [sponsoredPosts] = useState(posts);
   const [isPlaying, setIsPlaying] = useState(true);
 
-  // const { loading, error, data } = useQuery(GET_CATEGORIES);
-  // const [createCategory, newCategory] = useMutation(CREATE_CATEGORIES);
-
-  useEffect(() => {}, []);
-
-  // if (loading || newCategory.loading) return <h1>Loading</h1>;
-
-  // if (error) console.log("pooooooo", error);
-  // if (data) console.log(data);
 
   return (
     <div className="home-container">
       <Header />
-      <section
-        className="wide-intro"
-        // onClick={() =>
-        //   createCategory({
-        //     variables: {
-        //       newCategory: {
-        //         title: "ajantala29",
-        //         description: "hahahaha",
-        //         thumbnail: "https://",
-        //       },
-        //     },
-        //   })
-        // }
-      >
+      {props.location.state && props.location.state.payment && <ScrollTop />}
+      <section className="wide-intro">
         <h1 className="wide-intro__title">BUY, SELL, RENT & CONNECT ONLINE </h1>
         <h3 className="wide-intro__sub-title">
           Find Car Dealers , Private Sellers & Service Providers Online - Great
