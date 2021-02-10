@@ -8,7 +8,9 @@ import {
   loginState,
   userDetailsState,
   imageUploadState,
-  deleteProfileImageState,busyOverlayState
+  deleteProfileImageState,
+  busyOverlayState,
+  detailsState,
 } from "../recoil/atoms";
 import { currentImageUploadType } from "../recoil/selectors";
 
@@ -183,10 +185,12 @@ const useDeleteImageMutation = () => {
 const useCreateCarMutation = () => {
   const [, , , getId] = useAuthToken();
   const [, setIsBusy] = useRecoilState(busyOverlayState);
+  const [, setDetails] = useRecoilState(detailsState);
+  const alert = useAlert();
   const NEW_CAR = gql`
     mutation createCar($input: CarInputType!) {
       createCar(input: $input) {
-        owner
+        title
       }
     }
   `;
@@ -195,20 +199,63 @@ const useCreateCarMutation = () => {
     errorPolicy: "all",
     onCompleted: (data) => {
       if (data.createCar) {
-       setIsBusy(false)
+        setIsBusy(false);
+        setDetails({});
+        alert.success(
+          <div
+            className="alerts"
+            style={{
+              color: "white",
+              textTransform: "capitalize",
+              fontSize: "1.5rem",
+            }}
+          >
+            <span className="float-left">Ad published successfully</span>
+          </div>
+        );
       }
     },
   });
 
   const createNewCar = (data) => {
-    setIsBusy(true)
-    
+    setIsBusy(true);
+
     createCar({
-      variables: { input: {...data, owner: getId("user"), status:"published"} },
+      variables: {
+        input: { ...data, owner: getId("user"), status: "published" },
+      },
     });
   };
 
   return [createNewCar, createCarResult];
+};
+
+const useCreatePaymentMutation = () => {
+  const [, setIsBusy] = useRecoilState(busyOverlayState);
+  const [, , , getId] = useAuthToken();
+  const NEW_PAYMENT = gql`
+    mutation createPayment($input: PaymentInputType!) {
+      createPayment(input: $input) {
+        _id
+      }
+    }
+  `;
+
+  const [createPayment, createPaymentResult] = useMutation(NEW_PAYMENT, {
+    errorPolicy: "all",
+    onCompleted: (data) => {
+      console.log("payment completed", data);
+      setIsBusy(false);
+    },
+  });
+
+  const createNewPayment = (data) => {
+    createPayment({
+      variables: { input: { ...data, user: getId("user") } },
+    });
+  };
+
+  return [createNewPayment, createPaymentResult];
 };
 export {
   useRegistrationMutation,
@@ -216,4 +263,5 @@ export {
   useFileMutation,
   useDeleteImageMutation,
   useCreateCarMutation,
+  useCreatePaymentMutation,
 };

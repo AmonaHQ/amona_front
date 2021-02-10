@@ -49,7 +49,7 @@ const useSellerDetailsQuery = () => {
       allDetails.phoneNumber = user.phoneNumber;
       allDetails.email = user.email;
       allDetails.hidePhoneNumber = user.hidePhoneNumber;
-      setDetails(allDetails)
+      setDetails(allDetails);
       console.log("seller data", user);
     },
   });
@@ -149,6 +149,44 @@ const useCategoriesQuery = () => {
     onCompleted: (data) => {},
   });
 };
+
+const useCarQuery = () => {
+  const GET_CARS = gql`
+     query getCars {
+        cars {
+          cars {
+            owner {
+              firstName
+              rating
+            }
+            category
+            title
+            make
+            model
+            price
+            location {
+              stateName
+            }
+            created_at
+            hidePhoneNumber
+            pictures
+            pricing {
+              type
+              badge {
+                backgroundColor
+                color
+              }
+            }
+          }
+        }
+      }
+  `;
+
+  return useQuery(GET_CARS, {
+    onCompleted: (data) => {
+    },
+  });
+};
 export {
   useUserQuery,
   useLoginQuery,
@@ -156,4 +194,5 @@ export {
   usePricingsQuery,
   useCategoriesQuery,
   useSellerDetailsQuery,
+  useCarQuery,
 };

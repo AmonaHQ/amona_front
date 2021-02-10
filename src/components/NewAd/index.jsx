@@ -7,7 +7,12 @@ import Details from "./details";
 import Pictures from "./pictures";
 import Payment from "./payment";
 import { useAuthToken } from "../../token";
-import { redirectionState, adDetailsProgressState } from "../../recoil/atoms";
+import {
+  redirectionState,
+  adDetailsProgressState,
+  detailsState,
+  errorMessageState,
+} from "../../recoil/atoms";
 
 const NewAd = (props) => {
   const [steps] = useState([
@@ -18,7 +23,9 @@ const NewAd = (props) => {
   const location = useLocation();
   const [authToken] = useAuthToken();
   const [, setRedirect] = useRecoilState(redirectionState);
-  const [step] = useRecoilState(adDetailsProgressState);
+  const [step, setStep] = useRecoilState(adDetailsProgressState);
+  const [errorMessage, setShowError] = useRecoilState(errorMessageState);
+  const [details] = useRecoilState(detailsState);
 
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
@@ -38,13 +45,72 @@ const NewAd = (props) => {
     return (
       <div className="new-ad">
         <Header />
+
         <div className="new-ad__steps">
-          <div className="new-ad__steps__step">Details</div>
-          <div className="new-ad__steps__step">Photos</div>
+          <div
+            className="new-ad__steps__step"
+            onClick={() => {
+              if (details.description) {
+                setStep(0);
+                window.scrollTo(0, 0);
+              }
+            }}
+            style={details.description && { color: "blue", cursor: "pointer" }}
+          >
+            Details
+          </div>
+          <div
+            className="new-ad__steps__step"
+            onClick={() => {
+              if (details.description) {
+                setStep(1);
+              }
+            }}
+            style={details.description && { color: "blue", cursor: "pointer" }}
+          >
+            Photos
+          </div>
           {props.location.state && props.location.state.price > 0 && (
-            <div className="new-ad__steps__step">Payment</div>
+            <div
+              className="new-ad__steps__step"
+              onClick={() => {
+                if (details.pictures) {
+                  setStep(2);
+                }
+              }}
+              style={details.pictures && { color: "blue", cursor: "pointer" }}
+            >
+              Payment
+            </div>
           )}
           <div className="new-ad__steps__step">Finish</div>
+        </div>
+
+        <div
+          class={`registration-error-message mb-2  ${
+            !errorMessage.success && "registration-error-message--show"
+          }`}
+        >
+          <div
+            className={`registration-error-message__container mt-0 ${
+              !errorMessage.success
+                ? "registration-error-message__container--show"
+                : "registration-error-message__container--hide"
+            }`}
+          >
+            <div className="registration-error-message__header">
+              <h2>
+                Oops ! An error has occurred. Please make some corrections
+              </h2>{" "}
+              <i
+                className="fa fa-times"
+                onClick={() => setShowError({ success: true })}
+              ></i>
+            </div>
+            <div className="registration-error-message__content">
+              {errorMessage.emptyFields}
+            </div>
+          </div>
         </div>
 
         <div className="register__main new-ad__main">{steps[step]}</div>

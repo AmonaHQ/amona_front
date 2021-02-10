@@ -7,12 +7,12 @@ import ScrollTop from "../../utilities/scroll-top";
 import { adDetailsProgressState, detailsState } from "../../recoil/atoms";
 import { useCreateCarMutation } from "../../operations/mutations";
 
-const Details = ({ plan }) => {
-  const [images, setImages] = useState([]);
+const Details = ({ plan: { price, type, planId } }) => {
   const [canSelect, setCanSelect] = useState(true);
   const [, setStep] = useRecoilState(adDetailsProgressState);
   const [details, setDetails] = useRecoilState(detailsState);
   const [createCar, { error, data }] = useCreateCarMutation();
+  const [images, setImages] = useState(details.pictures || []);
 
   const onDrop = (acceptedFiles) => {
     const allImages = [...images];
@@ -59,18 +59,19 @@ const Details = ({ plan }) => {
     setCanSelect(true);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (next) => {
     const allDetails = { ...details };
     allDetails.pictures = images;
-    allDetails.plan =plan
+    allDetails.plan = { price, type, planId };
+    allDetails.pricing = planId;
     setDetails(allDetails);
-    createCar(allDetails)
-
-    console.log("all details", allDetails);
+    if (!next) {
+      createCar(allDetails);
+    } else setStep(2);
   };
 
-  if(error) {
-    console.log("error", error)
+  if (error) {
+    console.log("error", error);
   }
 
   if (data && !error) {
@@ -150,11 +151,12 @@ const Details = ({ plan }) => {
           className="form__next"
           type="button"
           onClick={() => {
-            if (plan.price > 0) setStep(2);
+            if (price > 0) handleSubmit(true);
             else handleSubmit();
           }}
+          disabled={!images.length || images.includes("loading")}
         >
-          {plan.price === 0 ? "Finish" : "Next"}
+          {price === 0 ? "Finish" : "Next"}
         </button>
       </form>
     </>

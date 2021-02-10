@@ -5,7 +5,7 @@ import { createUploadLink } from "apollo-upload-client";
 import { ApolloLink } from "apollo-link";
 import { useAuthToken } from "../token";
 
-const link = new createUploadLink({ uri: "http://localhost:5000/graphql" });
+const link = new createUploadLink({ uri: process.env.REACT_APP_baseUrl });
 
 const authMiddleware = (authToken) =>
   new ApolloLink((operation, forward) => {
@@ -20,7 +20,7 @@ const cache = new InMemoryCache({});
 
 const useAppApolloClient = () => {
   const [authToken] = useAuthToken();
-console.log("auth token", authToken)
+  console.log("auth token", authToken);
   return new ApolloClient({
     link: authMiddleware(authToken).concat(link),
     cache,

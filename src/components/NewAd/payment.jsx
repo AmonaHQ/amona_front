@@ -1,104 +1,123 @@
 import React, { useState } from "react";
-import ReactTooltip from "react-tooltip";
+import { usePaystackPayment } from "react-paystack";
+import { Redirect } from "react-router-dom";
+import { useRecoilState } from "recoil";
 import ScrollTop from "../../utilities/scroll-top";
+import CustomDropdown from "../Commons/custom-dropdown";
+import Paystack from "../../assets/img/icons/paystack.png";
+import Paypal from "../../assets/img/icons/paypal.png";
+import numberWithCommas from "../../utilities/number-with-commas";
+import { detailsState } from "../../recoil/atoms";
+import {
+  useCreatePaymentMutation,
+  useCreateCarMutation,
+} from "../../operations/mutations";
 
-const Details = () => {
-  const [ads] = useState([
-    {
-      type: "FREE Ads",
-      value: "0.00",
-      currency: "₦",
-      currencyName: "NGN",
-      tips: "Up to 10 images allowed. Free Ad. Keep online for 365 days",
-    },
-    {
-      type: "Urgent Ad",
-      value: "25,000.00",
-      currency: "₦",
-      currencyName: "NGN",
-      tips: `30 days of promotion.  Facebook Ads (30 days).  Google Ads (3 days) Up to 10 images allowed. Urgent -NGN (N). Keep online for 365 days`,
-    },
-    {
-      type: "Urgent Ad",
-      value: "70.00",
-      currency: "$",
-      currencyName: "USD",
-    },
-    {
-      type: "Top Page Ad",
-      value: "40,000.00",
-      currency: "₦",
-      currencyName: "NGN",
-    },
-    {
-      type: "Top Page Ad",
-      value: "110.00",
-      currency: "$",
-      currencyName: "USD",
-    },
-    {
-      type: "Top page Ad + Urgent Ad",
-      value: "55,000.00",
-      currency: "₦",
-      currencyName: "NGN",
-    },
-    {
-      type: "Top page Ad + Urgent Ad",
-      value: "150.00",
-      currency: "$",
-      currencyName: "USD",
-    },
-  ]);
+const Details = ({ plan }) => {
+  const [paymentMethod, setPaymentMethod] = useState({});
+  const [details] = useRecoilState(detailsState);
+  const [createCar, createCarResult] = useCreateCarMutation();
+  const [createPayment, createPaymentResult] = useCreatePaymentMutation();
+
+  const onSuccess = (reference) => {
+    // Implementation for whatever you want to do with reference and after success call.
+    const { price, planId, type, currency, currencySymbol } = plan;
+    createCar(details);
+    createPayment({
+      paymentMethod: paymentMethod.value,
+      planId: planId,
+      paymentReference: reference.reference,
+      type: type,
+      currencySymbol,
+      currency,
+      amount: price,
+    });
+    console.log(reference, details);
+  };
+
+  // you can call this function anything
+  const onClose = () => {
+    // implementation for  whatever you want to do when the Paystack dialog closed.
+    console.log("closed");
+  };
+
+  const config = {
+    reference: new Date().getTime(),
+    email: details.email,
+    amount: plan.price * 100,
+    publicKey: "pk_test_b4728c06934db7463db4ecccd1e3d82340d776a2",
+  };
+
+  const initializePayment = usePaystackPayment(config);
+
+  if (createCarResult.data && createPaymentResult.data) {
+    return (
+      <Redirect
+        loggedIn
+        to={{
+          pathname: "/",
+          state: {
+            payment: true,
+          },
+        }}
+      />
+    );
+  }
   return (
     <>
       <ScrollTop />
       <div className="register__main__heading">
-        <i class="fas fa-tag new-ad__main__heading__icon"></i>
-        <h1 className="h1">Pricing</h1>
+        <i class="fas fa-wallet new-ad__main__heading__icon"></i>
+        <h1 className="h1">Payment</h1>
       </div>
-      <div className="new-ad__main__sub-heading">
-        <i class="fas fa-certificate"></i>
-        <h1 className="h1">Premium Ad</h1>
-      </div>
-      <p className="new-ad__main__sub-text">
-        The premium package help sellers to promote their products or services
-        by giving more visibility to their ads to attract more buyers and sell
-        faster.{" "}
-      </p>
-
-      <form action="" className="form form--new-ad form__payment">
+      <div className="payment">
         <div className="payment__options">
-          {ads.map((ad, index) => (
+          <CustomDropdown
+            items={[
+              { name: "For ₦(NGN), Pay with Paystack", value: "paystack" },
+              { name: "For $(USD), Pay with Paypal", value: "paypal" },
+              { name: "Choose Payment Option" },
+            ]}
+            onSelect={(item) => setPaymentMethod(item)}
+            placeHolder="Choose Payment Option"
+          />
+
+          <h4 className="payment__options__amount">
+            Payable Amount:{" "}
+            {`${plan.currencySymbol} ${numberWithCommas(plan.price)}`}
+          </h4>
+        </div>
+        <div className="payment__payment-option">
+          {paymentMethod.value === "paystack" && (
             <>
-              {ad.type === "FREE Ads" ? (
-                <div key={index} className="payment__option" data-tip={ad.tips}>
-                  <div className="payment__option__type">
-                    <input type="radio" name="payment-option" id={index} />
-                    <label htmlFor={index}>{ad.type}</label>
-                  </div>
-
-                  <div className="payment__option__value">₦ 0.00</div>
-                </div>
-              ) : (
-                <div className="payment__option" data-tip={ad.tips}>
-                  <div className="payment__option__type">
-                    <input type="radio" name="payment-option" id={index} />
-                    <label htmlFor={index}>
-                      {ad.type} - {ad.currencyName} ({ad.currency})
-                    </label>{" "}
-                    <span>Upgrade</span>
-                  </div>
-
-                  <div className="payment__option__value">
-                    {ad.currency} {ad.value}
-                  </div>
-                </div>
-              )}
+              <div className="payment__payment-option__image animated fadeIn">
+                <img src={Paystack} alt={paymentMethod.name} />
+              </div>{" "}
+              <button
+                onClick={() => {
+                  initializePayment(onSuccess, onClose);
+                }}
+              >
+                Pay
+              </button>
             </>
-          ))}
-        </div>{" "}
-        <ReactTooltip multiline={true} />
-      </form>
+          )}
+          {paymentMethod.value === "paypal" && (
+            <>
+              <div className="payment__payment-option__image animated fadeIn">
+                <img src={Paypal} alt={paymentMethod.name} />
+              </div>
+              <button>Pay</button>
+            </>
+          )}
+
+          {!paymentMethod.value && (
+            <div className="payment__payment-option__image animated fadeIn">
+              <h2>No Payment Method Selected</h2>
+            </div>
+          )}
+        </div>
+      </div>
     </>
   );
 };

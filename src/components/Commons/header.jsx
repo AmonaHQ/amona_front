@@ -2,7 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { menuState } from "../../recoil/atoms";
-import { loginState, loginModalState, userDetailsState } from "../../recoil/atoms";
+import {
+  loginState,
+  loginModalState,
+  userDetailsState,
+  adDetailsProgressState,
+} from "../../recoil/atoms";
 import logo from "../../assets/img/cheapcars.png";
 import Overlay from "./overlay";
 import { useAuthToken, verifyToken } from "../../token";
@@ -18,6 +23,7 @@ const Header = (props) => {
   const [user] = useRecoilState(userDetailsState);
   const [, setMenu] = useRecoilState(menuState);
   const [height] = useState(isLoggedIn || authToken ? "49rem" : "15rem");
+  const [, setAdStep] = useRecoilState(adDetailsProgressState);
 
   const listRef = useRef();
   const resetShow = () => {
@@ -143,8 +149,10 @@ const Header = (props) => {
 
         <div className="region__city__button">
           <NavLink to="/ads/new">
-            {" "}
-            <button className="post-ad region__city__button--header">
+            <button
+              className="post-ad region__city__button--header"
+              onClick={() => setAdStep(0)}
+            >
               <i className="post-ad__icon fa fa-plus-circle"></i> Post Ad FREE
             </button>
           </NavLink>

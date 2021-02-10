@@ -1,38 +1,47 @@
 import React from "react";
 import StarRatings from "react-star-ratings";
+import TimeAgo from "timeago-react";
+import numberWithCommas from "../../utilities/number-with-commas";
+
 const Post = ({ index, post }) => {
   return (
     <div className="latest-ads__latest-ads__latest-ad" key={index}>
-      {post.promotion && (
-        <figure className="latest-ads__latest-ads__latest-ad__badge">
-          {post.promotion.type}
+      {post.pricing && post.pricing.badge && (
+        <figure
+          className="latest-ads__latest-ads__latest-ad__badge"
+          style={{
+            backgroundColor: post.pricing.badge.backgroundColor,
+            color: post.pricing.badge.color,
+          }}
+        >
+          {post.pricing.type}
         </figure>
       )}
       <figure className="latest-ads__latest-ads__latest-ad__picture">
-        <img src={post.picture} alt={post.title} />
+        <img src={post.pictures[0]} alt={post.title} />
       </figure>
       <h3 className="latest-ads__latest-ads__latest-ad__title">{post.title}</h3>
       <div className="latest-ads__latest-ads__latest-ad__details">
         <span className="latest-ads__latest-ads__latest-ad__details__time">
-          <i className="fa fa-clock"></i> {post.created_at}
+          <i className="fa fa-clock"></i>{" "}
+          <TimeAgo datetime={post.created_at} locale="en" />
         </span>
         <span className="latest-ads__latest-ads__latest-ad__details__model">
-          <i className="fa fa-car"></i> {post.model}
+          <i className="fa fa-car"></i> {post.make}
         </span>
-       
       </div>
       <div className="latest-ads__latest-ads__latest-ad__details">
         <span className="latest-ads__latest-ads__latest-ad__details__distance">
           {`${post.distance} km away`}
         </span>
         <span className="latest-ads__latest-ads__latest-ad__details__location">
-          <i className="fa fa-map-marker"></i> {post.location}
+          <i className="fa fa-map-marker"></i> {post.location.stateName}
         </span>
       </div>
       <div className="latest-ads__latest-ads__latest-ad__details">
         <span className="latest-ads__latest-ads__latest-ad__details__rating">
           <StarRatings
-            rating={post.rating}
+            rating={post.owner.rating}
             starDimension="1.5rem"
             starSpacing=".1rem"
             starRatedColor="gold"
@@ -50,7 +59,7 @@ const Post = ({ index, post }) => {
           </div>
         </span>
         <span className="latest-ads__latest-ads__latest-ad__details__price">
-          {`₦${post.price}`}
+          {`₦${numberWithCommas(post.price)}`}
         </span>
       </div>
     </div>

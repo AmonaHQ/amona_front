@@ -11,7 +11,7 @@ const Overlay = (props) => {
   const [modalShow, setModalShow] = useRecoilState(loginModalState);
   const [inputData, setInputData] = useRecoilState(userDetailsState);
   const [login, { loading, data, error }] = useLoginQuery();
-  const [redirection] = useRecoilState(redirectionState);
+  const [redirection, setRedirection] = useRecoilState(redirectionState);
 
   const handleChange = (event) => {
     const data = { ...inputData };
@@ -24,12 +24,13 @@ const Overlay = (props) => {
   };
   if (data && data.signIn) {
     setModalShow(false);
-    if (redirection) {
+    if (redirection.path) {
+      setRedirection({ path: "null", state: {} });
       return (
         <Redirect
           to={{
-            pathname: "/ads/new",
-            state: { type: "Urgent" },
+            pathname: redirection.path,
+            state: redirection.state,
           }}
         />
       );

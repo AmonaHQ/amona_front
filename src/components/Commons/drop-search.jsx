@@ -12,8 +12,9 @@ const DropSearch = ({
   async,
   onChange,
   inputType,
+  value,
 }) => {
-  const [display, setDisplay] = useState("");
+  const [display, setDisplay] = useState(value ? value : {});
   const [dropDownData, setDropDownData] = useState([]);
   const [delay] = useState(1000);
   const [rawData, setRawData] = useState([]);

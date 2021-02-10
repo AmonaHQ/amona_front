@@ -48,7 +48,7 @@ const planState = atom({
 
 const redirectionState = atom({
   key: "redirectionState",
-  default: null,
+  default: { path: null, state: {} },
 });
 const vehicleMakeState = atom({
   key: "vehicleMakeState",
@@ -74,6 +74,10 @@ const adDetailsProgressState = atom({
   default: 0,
 });
 
+const errorMessageState = atom({
+  key: "errorMessageState",
+  default: { success: true, emptyFields: null },
+});
 export {
   loginState,
   menuState,
@@ -90,4 +94,5 @@ export {
   vehicleModelState,
   detailsState,
   adDetailsProgressState,
+  errorMessageState,
 };

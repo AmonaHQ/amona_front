@@ -43,6 +43,7 @@
         align-items: center;
         justify-content: center;
         padding-top: 1rem;
+        min-height: 18rem;
         // border: 1px solid black;
         & img {
           height: 95%;
@@ -73,8 +74,8 @@
         margin: auto;
         margin-bottom: 1rem;
 
- 
-        &__model, &__time {
+        &__model,
+        &__time {
           text-overflow: ellipsis;
           white-space: nowrap;
           overflow: hidden;

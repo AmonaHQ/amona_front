@@ -8,16 +8,24 @@ import latestPost from "../../constants/latest-posts";
 import Header from "../Commons/header";
 import Footer from "../Commons/footer";
 import Post from "../Commons/post";
+import PostSkeleton from "../Commons/post-skeleton";
 import "pure-react-carousel/dist/react-carousel.es.css";
 import categories from "../../constants/categories";
 import ScrollTop from "../../utilities/scroll-top";
-
-
+import { useCarQuery } from "../../operations/queries";
 
 const Home = (props) => {
   const [sponsoredPosts] = useState(posts);
   const [isPlaying, setIsPlaying] = useState(true);
 
+  const { loading, data } = useCarQuery();
+
+  if (data) {
+    const {
+      cars: { cars },
+    } = data;
+    console.log("this is car", cars);
+  }
 
   return (
     <div className="home-container">
@@ -191,9 +199,13 @@ const Home = (props) => {
             </div>
           </div>
           <div className="latest-ads__latest-ads">
-            {latestPost.map((post, index) => (
-              <Post index={index} post={post} />
-            ))}
+            {loading
+              ? latestPost.map((post, index) => (
+                  <PostSkeleton index={index} post={post} />
+                ))
+              : data.cars.cars.map((post, index) => (
+                  <Post index={index} post={post} />
+                ))}
           </div>
           <div className="latest-ads__view-more">
             <div className="latest-ads__view-more__btn">

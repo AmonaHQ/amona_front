@@ -12,6 +12,14 @@
     display: flex;
     position: relative;
     margin-bottom: 3rem;
+    @include respond(mini-medium) {
+      grid-column: 2 / 12;
+    }
+    @include respond(small) {
+      grid-column: 1 / -1;
+      width: 97%;
+      margin: 4rem auto;
+    }
     &__background {
       background-color: #f1f1f1;
       width: 51.4%;
@@ -134,7 +142,6 @@
   }
 }
 
-
 .payment__options {
   width: 100%;
   padding: 2rem;
@@ -171,5 +178,116 @@
   &__value {
     color: black;
     font-size: 12px;
+  }
+}
+
+.payment {
+  &__options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-content: space-between;
+
+    &__amount {
+      justify-self: end;
+    }
+
+    @media (max-width: 32em) {
+      grid-template-rows: repeat(2, min-content);
+      grid-template-columns: 1fr;
+
+      &__amount {
+        grid-row: 1 / 2;
+        justify-self: start;
+        margin-bottom: 1rem;
+      }
+
+      .custom-dropdown {
+        grid-row: 2 / 3;
+      }
+    }
+  }
+
+  &__payment-option {
+    width: fit-content;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 3rem auto;
+    min-height: 13rem;
+
+    & button,
+    button:active {
+      font-size: 1.9rem;
+      padding: 1.1rem 1.7rem;
+      margin-top: 2rem;
+      border: none;
+      background-color: var(--color-primary);
+      color: white;
+      border-radius: 0.5rem;
+      transition: all 0.3s;
+      outline: none;
+
+      &:hover {
+        background-color: var(--color-primary-dark);
+      }
+    }
+  }
+}
+
+.additional-details {
+  width: 100%;
+  margin: 2rem 0 !important;
+
+  @include respond(small) {
+    // width: 95%;
+  }
+  @include respond(smaller) {
+    margin: auto;
+  }
+  & > input {
+    display: none;
+
+    &:checked ~ label {
+      & i {
+        transform: rotate(180deg);
+      }
+    }
+
+    &:checked ~ div {
+      display: grid;
+    }
+  }
+
+  & label {
+    width: 100%;
+    margin: 0;
+  }
+
+  &__heading {
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    color: var(--color-headings);
+    padding: 1rem;
+    cursor: pointer;
+    & i {
+      font-size: 1.5rem;
+      transition: all 0.3s;
+    }
+
+    & h2 {
+      margin: 0 1rem;
+      font-weight: 700;
+    }
+    & span {
+      font-size: 1.4rem;
+    }
+  }
+
+  &__body {
+    margin-top: 2rem;
+    display: none;
   }
 }

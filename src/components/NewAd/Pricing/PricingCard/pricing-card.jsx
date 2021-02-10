@@ -4,9 +4,10 @@ import { Link } from "react-router-dom";
 import { redirectionState } from "../../../../recoil/atoms";
 import { useAuthToken } from "../../../../token";
 import { loginModalState } from "../../../../recoil/atoms";
+import numberWithCommas from "../../../../utilities/number-with-commas";
 
 const PricingCard = ({
-  plan: { type, _id, currencySymbol, price, features, highlights },
+  plan: { type, _id, currency, currencySymbol, price, features, highlights },
 }) => {
   const [, setRedirection] = useRecoilState(redirectionState);
   const [authToken] = useAuthToken();
@@ -14,7 +15,10 @@ const PricingCard = ({
 
   const selectPlan = () => {
     if (!authToken) {
-      setRedirection("/ads/new");
+      setRedirection({
+        path: "/ads/new",
+        state: { type, planId: _id, price, currency, currencySymbol },
+      });
       setModalShow(true);
     }
   };
@@ -33,7 +37,7 @@ const PricingCard = ({
       </div>
       <div className="pricing__container__card__price">
         <span>{currencySymbol}</span>
-        <span>{price}</span> / <span>ad</span>
+        <span>{numberWithCommas(price)}</span> / <span>ad</span>
       </div>
 
       <ul className="pricing__container__card__features">
@@ -42,7 +46,7 @@ const PricingCard = ({
       <Link
         to={{
           pathname: authToken ? "/ads/new" : "/ads/new/pricing",
-          state: { type, planId: _id, price },
+          state: { type, planId: _id, price, currency, currencySymbol },
         }}
       >
         <div

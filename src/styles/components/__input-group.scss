@@ -323,6 +323,7 @@
     border: 1px solid var(--color-border);
     position: relative;
     margin-bottom: 1rem;
+    width: 100% !important;
 
     &--skeleton {
       background-color: #f5f5f5;
@@ -396,7 +397,7 @@
 
       & label {
         color: black;
-        margin-left: 1rem;
+        margin-left: 1rem !important;
       }
     }
   }

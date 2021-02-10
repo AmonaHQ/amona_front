@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 
-const Features = ({ data, onSelect }) => {
+const Features = ({ data, onSelect, value }) => {
   const [features, setFeatures] = useState([]);
 
   useEffect(() => {
     setFeatures(data);
-  }, [data]);
+
+  }, [data, value]);
 
   return (
     <ul className="features__list">
@@ -17,8 +18,9 @@ const Features = ({ data, onSelect }) => {
               id={feature.feature}
               value={feature.feature}
               onChange={() => onSelect(feature.feature)}
+              checked={value && value.includes(feature.feature)}
             />
-            <label htmlFor={feature.feature}>{feature.feature}</label>
+            <label htmlFor={feature.feature}>{feature.feature} </label>
           </li>
         ))}
     </ul>
