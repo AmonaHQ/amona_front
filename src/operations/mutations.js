@@ -11,8 +11,10 @@ import {
   deleteProfileImageState,
   busyOverlayState,
   detailsState,
+  adDetailsProgressState,
 } from "../recoil/atoms";
 import { currentImageUploadType } from "../recoil/selectors";
+import removeTypeName from "../utilities/remove-typename";
 
 const useRegistrationMutation = () => {
   const CREATE_USER = gql`
@@ -86,12 +88,8 @@ const useUpdateUserMutation = () => {
 
   const updateUserInformation = (data) => {
     delete data.email;
-    const refinedUser = {};
-    for (const field in data) {
-      if (field !== "__typename") {
-        refinedUser[field] = data[field];
-      }
-    }
+    const refinedUser = removeTypeName(data, "__typename");
+
     updateUser({
       variables: { input: { _id: getId("user"), ...refinedUser } },
       optimisticResponse: {
@@ -186,6 +184,7 @@ const useCreateCarMutation = () => {
   const [, , , getId] = useAuthToken();
   const [, setIsBusy] = useRecoilState(busyOverlayState);
   const [, setDetails] = useRecoilState(detailsState);
+  const [, setProgress] = useRecoilState(adDetailsProgressState);
   const alert = useAlert();
   const NEW_CAR = gql`
     mutation createCar($input: CarInputType!) {
@@ -194,13 +193,33 @@ const useCreateCarMutation = () => {
       }
     }
   `;
-
+  const GET_CARS_BY_OWNER = gql`
+    query getCars($input: FindByIdType!) {
+      carsByOwner(input: $input) {
+        cars {
+          _id
+          title
+          price
+          pictures
+        }
+      }
+    }
+  `;
+  const GET_NUMBERS = gql`
+    query getNumbers($input: FindByIdType!) {
+      getNumbers(input: $input) {
+        transactions
+        cars
+      }
+    }
+  `;
   const [createCar, createCarResult] = useMutation(NEW_CAR, {
     errorPolicy: "all",
     onCompleted: (data) => {
       if (data.createCar) {
         setIsBusy(false);
         setDetails({});
+        setProgress(0);
         alert.success(
           <div
             className="alerts"
@@ -215,6 +234,20 @@ const useCreateCarMutation = () => {
         );
       }
     },
+    refetchQueries: [
+      {
+        query: GET_CARS_BY_OWNER,
+        variables: {
+          input: { _id: getId("user") },
+        },
+      },
+      {
+        query: GET_NUMBERS,
+        variables: {
+          input: { _id: getId("user") },
+        },
+      },
+    ],
   });
 
   const createNewCar = (data) => {
@@ -257,6 +290,233 @@ const useCreatePaymentMutation = () => {
 
   return [createNewPayment, createPaymentResult];
 };
+
+const useDeleteCarMutation = () => {
+  const [, , , getId] = useAuthToken();
+  const [, setIsBusy] = useRecoilState(busyOverlayState);
+  const alert = useAlert();
+  const DELETE_CAR = gql`
+    mutation deleteCar($input: FindByIdType!) {
+      deleteCar(input: $input) {
+        status
+        success
+        itemId
+      }
+    }
+  `;
+  const GET_NUMBERS = gql`
+    query getNumbers($input: FindByIdType!) {
+      getNumbers(input: $input) {
+        transactions
+        cars
+      }
+    }
+  `;
+  const [deleteCar, deleteCarResult] = useMutation(DELETE_CAR, {
+    errorPolicy: "all",
+    onCompleted: (data) => {
+      setIsBusy(false);
+      alert.success(
+        <div
+          className="alerts"
+          style={{
+            color: "white",
+            textTransform: "capitalize",
+            fontSize: "1.5rem",
+          }}
+        >
+          <span className="float-left">Ad deleted successfully</span>
+        </div>
+      );
+    },
+    update: (cache, { data }) => {
+      const GET_CARS_BY_OWNER = gql`
+        query getCars($input: FindByIdType!) {
+          carsByOwner(input: $input) {
+            cars {
+              _id
+              title
+              price
+              pictures
+            }
+          }
+        }
+      `;
+      const existingCars = cache.readQuery({
+        query: GET_CARS_BY_OWNER,
+        variables: {
+          input: { _id: getId("user") },
+        },
+      });
+
+      const { cars } = existingCars.carsByOwner;
+
+      const newCars = cars.filter((car) => car._id !== data.deleteCar.itemId);
+      cache.writeQuery({
+        query: GET_CARS_BY_OWNER,
+        variables: {
+          input: { _id: getId("user") },
+        },
+        data: { carsByOwner: { cars: newCars } },
+      });
+    },
+    refetchQueries: [
+      {
+        query: GET_NUMBERS,
+        variables: {
+          input: { _id: getId("user") },
+        },
+      },
+    ],
+  });
+
+  const deleteAd = (data) => {
+    setIsBusy(true);
+    deleteCar({
+      variables: { input: data },
+    });
+  };
+
+  return [deleteAd, deleteCarResult];
+};
+
+const useDeleteAllCarMutation = () => {
+  const [, , , getId] = useAuthToken();
+  const [, setIsBusy] = useRecoilState(busyOverlayState);
+  const alert = useAlert();
+  const DELETE_CAR = gql`
+    mutation deleteAllCars($input: DeleteAllType!) {
+      deleteAllCars(input: $input) {
+        status
+        success
+      }
+    }
+  `;
+  const GET_CARS_BY_OWNER = gql`
+    query getCars($input: FindByIdType!) {
+      carsByOwner(input: $input) {
+        cars {
+          _id
+          title
+          price
+          pictures
+        }
+      }
+    }
+  `;
+  const GET_NUMBERS = gql`
+    query getNumbers($input: FindByIdType!) {
+      getNumbers(input: $input) {
+        transactions
+        cars
+      }
+    }
+  `;
+  const [deleteCar, deleteCarResult] = useMutation(DELETE_CAR, {
+    errorPolicy: "all",
+    onCompleted: (data) => {
+      setIsBusy(false);
+      alert.success(
+        <div
+          className="alerts"
+          style={{
+            color: "white",
+            textTransform: "capitalize",
+            fontSize: "1.5rem",
+          }}
+        >
+          <span className="float-left">Ads deleted successfully</span>
+        </div>
+      );
+    },
+    refetchQueries: [
+      {
+        query: GET_CARS_BY_OWNER,
+        variables: {
+          input: { _id: getId("user") },
+        },
+      },
+      {
+        query: GET_NUMBERS,
+        variables: {
+          input: { _id: getId("user") },
+        },
+      },
+    ],
+  });
+
+  const deleteAllAds = (data) => {
+    setIsBusy(true);
+    deleteCar({
+      variables: { input: { ...data, owner: getId("user") } },
+    });
+  };
+
+  return [deleteAllAds, deleteCarResult];
+};
+
+const useUpdateCarMutation = () => {
+  const [, setIsBusy] = useRecoilState(busyOverlayState);
+  const [, , , getId] = useAuthToken();
+  const alert = useAlert();
+  const UPDATE_CAR = gql`
+    mutation updateCar($input: CarUpdateType!) {
+      updateCar(input: $input) {
+        success
+        status
+      }
+    }
+  `;
+  const GET_CARS_BY_OWNER = gql`
+    query getCars($input: FindByIdType!) {
+      carsByOwner(input: $input) {
+        cars {
+          _id
+          title
+          price
+          pictures
+        }
+      }
+    }
+  `;
+  const [updateCar, updateCarResult] = useMutation(UPDATE_CAR, {
+    onCompleted: (data) => {
+      setIsBusy(false);
+      alert.success(
+        <div
+          className="alerts"
+          style={{
+            color: "white",
+            textTransform: "capitalize",
+            fontSize: "1.5rem",
+          }}
+        >
+          <span className="float-left">Ad updated successfully</span>
+        </div>
+      );
+    },
+
+    refetchQueries: [
+      {
+        query: GET_CARS_BY_OWNER,
+        variables: {
+          input: { _id: getId("user") },
+        },
+      },
+    ],
+  });
+
+  const updateACar = (data) => {
+    setIsBusy(true);
+    const refinedCar = removeTypeName(data, "__typename");
+
+    updateCar({
+      variables: { input: refinedCar },
+    });
+  };
+
+  return [updateACar, updateCarResult];
+};
 export {
   useRegistrationMutation,
   useUpdateUserMutation,
@@ -264,4 +524,7 @@ export {
   useDeleteImageMutation,
   useCreateCarMutation,
   useCreatePaymentMutation,
+  useDeleteCarMutation,
+  useDeleteAllCarMutation,
+  useUpdateCarMutation,
 };

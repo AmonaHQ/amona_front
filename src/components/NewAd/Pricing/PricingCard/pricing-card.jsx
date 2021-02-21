@@ -46,7 +46,14 @@ const PricingCard = ({
       <Link
         to={{
           pathname: authToken ? "/ads/new" : "/ads/new/pricing",
-          state: { type, planId: _id, price, currency, currencySymbol },
+          state: {
+            type,
+            planId: _id,
+            price,
+            currency,
+            currencySymbol,
+            _id: null,
+          },
         }}
       >
         <div

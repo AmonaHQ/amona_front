@@ -7,10 +7,11 @@ import {
   userDetailsState,
   imageUploadType,
   detailsState,
+  busyOverlayState,
 } from "../recoil/atoms";
 
 const useUserQuery = () => {
-  const GET_CATEGORIES = gql`
+  const GET_USER = gql`
     query user($input: FindByIdType!) {
       getUser(input: $input) {
         _id
@@ -24,7 +25,7 @@ const useUserQuery = () => {
     }
   `;
   const [, , , getId] = useAuthToken();
-  return useQuery(GET_CATEGORIES, {
+  return useQuery(GET_USER, {
     variables: { input: { _id: getId("user") } },
   });
 };
@@ -46,11 +47,13 @@ const useSellerDetailsQuery = () => {
     onCompleted: (data) => {
       const user = data.getUser;
       const allDetails = { ...details };
-      allDetails.phoneNumber = user.phoneNumber;
-      allDetails.email = user.email;
-      allDetails.hidePhoneNumber = user.hidePhoneNumber;
-      setDetails(allDetails);
-      console.log("seller data", user);
+      if (!allDetails.phoneNumber) {
+        allDetails.phoneNumber = user.phoneNumber;
+        allDetails.email = user.email;
+        allDetails.hidePhoneNumber = user.hidePhoneNumber;
+        setDetails(allDetails);
+        console.log("seller data", user);
+      }
     },
   });
 };
@@ -152,38 +155,235 @@ const useCategoriesQuery = () => {
 
 const useCarQuery = () => {
   const GET_CARS = gql`
-     query getCars {
+    query getCars {
+      cars {
         cars {
-          cars {
-            owner {
-              firstName
-              rating
-            }
-            category
-            title
-            make
-            model
-            price
-            location {
-              stateName
-            }
-            created_at
-            hidePhoneNumber
-            pictures
-            pricing {
-              type
-              badge {
-                backgroundColor
-                color
-              }
+          owner {
+            firstName
+            rating
+          }
+          category
+          title
+          make
+          model
+          price
+          location {
+            stateName
+          }
+          created_at
+          hidePhoneNumber
+          pictures
+          pricing {
+            type
+            badge {
+              backgroundColor
+              color
             }
           }
+          permalink
         }
       }
+    }
   `;
 
   return useQuery(GET_CARS, {
+    onCompleted: (data) => {},
+  });
+};
+
+const useCarByOwnerQuery = () => {
+  const [, , , getId] = useAuthToken();
+
+  const GET_CARS_BY_OWNER = gql`
+    query getCars($input: FindByIdType!) {
+      carsByOwner(input: $input) {
+        cars {
+          _id
+          title
+          price
+          pictures
+          make
+          pricing {
+            _id
+            currency
+            currencySymbol
+            type
+          }
+        }
+      }
+    }
+  `;
+
+  return useQuery(GET_CARS_BY_OWNER, {
+    variables: { input: { _id: getId("user") } },
     onCompleted: (data) => {
+      console.log("cars by owner", data);
+    },
+    refetchQueries: [
+      {
+        query: GET_CARS_BY_OWNER,
+        variables: {
+          input: { _id: getId("user") },
+        },
+      },
+    ],
+  });
+};
+
+const useGetCarById = () => {
+  const [details, setDetails] = useRecoilState(detailsState);
+  const GET_CAR_BY_ID = gql`
+    query getCar($input: FindByIdType!) {
+      findOneCar(input: $input) {
+        _id
+        category
+        title
+        description
+        make
+        model
+        year
+        condition
+        mileage
+        location {
+          stateName
+          formatted_address
+          countryName
+          lat
+          lng
+          place_id
+        }
+        price
+        pictures
+        transmission
+        numberOfDoors
+        fuelType
+        drive
+        interiorColor
+        exteriorColor
+        videoLink
+        features
+        phoneNumber
+        negotiable
+        email
+        hidePhoneNumber
+      }
+    }
+  `;
+
+  const [getCar, getCarResult] = useLazyQuery(GET_CAR_BY_ID, {
+    onCompleted: (data) => {
+      setDetails({ ...details, ...data.findOneCar });
+      console.log("car by id", data);
+    },
+  });
+
+  const getCarById = (data) => {
+    getCar({
+      variables: { input: data },
+    });
+  };
+  return [getCarById, getCarResult];
+};
+
+const useGetCarByPermalink = (permalink) => {
+  const [details, setDetails] = useRecoilState(detailsState);
+  const GET_CAR_BY_ID = gql`
+    query getCar($input: FindByPermalinkType!) {
+      findOneCarByPermalink(input: $input) {
+        _id
+        category
+        title
+        description
+        make
+        model
+        year
+        condition
+        mileage
+        location {
+          stateName
+          formatted_address
+          countryName
+          lat
+          lng
+          place_id
+        }
+        price
+        pictures
+        transmission
+        numberOfDoors
+        fuelType
+        drive
+        interiorColor
+        exteriorColor
+        videoLink
+        features
+        phoneNumber
+        email
+        hidePhoneNumber
+        negotiable
+        owner {
+          firstName
+          lastName
+          rating
+          votes
+        }
+        created_at
+      }
+    }
+  `;
+
+  return useQuery(GET_CAR_BY_ID, {
+    variables: { input: { permalink } },
+    onCompleted:(data) => {
+      console.log("permalink", data)
+    }
+  });
+};
+
+const useTransactionQuery = () => {
+  const [, , , getId] = useAuthToken();
+  const [, setBusy] = useRecoilState(busyOverlayState);
+  // setBusy(true);
+  const GET_TRANSSACTION = gql`
+    query getTransactions($input: FindByIdType!) {
+      paymentsByUser(input: $input) {
+        payments {
+          type
+          amount
+          paymentMethod
+          planId
+          user
+          paymentReference
+          currency
+          currencySymbol
+          created_at
+        }
+      }
+    }
+  `;
+
+  return useQuery(GET_TRANSSACTION, {
+    variables: { input: { _id: getId("user") } },
+    onCompleted: (data) => {
+      setBusy(false);
+    },
+  });
+};
+
+const useGetNumbers = () => {
+  const [, , , getId] = useAuthToken();
+  const GET_NUMBERS = gql`
+    query getNumbers($input: FindByIdType!) {
+      getNumbers(input: $input) {
+        transactions
+        cars
+      }
+    }
+  `;
+  return useQuery(GET_NUMBERS, {
+    variables: { input: { _id: getId("user") } },
+    onCompleted: (data) => {
+      console.log("numbers", data);
     },
   });
 };
@@ -195,4 +395,9 @@ export {
   useCategoriesQuery,
   useSellerDetailsQuery,
   useCarQuery,
+  useCarByOwnerQuery,
+  useGetCarById,
+  useTransactionQuery,
+  useGetNumbers,
+  useGetCarByPermalink,
 };

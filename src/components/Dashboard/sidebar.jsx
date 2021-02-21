@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useRecoilState } from "recoil";
 import { menuState } from "../../recoil/atoms";
+import { useGetNumbers } from "../../operations/queries";
 
 const Sidebar = () => {
   const accountRef = useRef();
@@ -10,6 +11,7 @@ const Sidebar = () => {
   const [myAdsHeight, setMyAdsHeight] = useState({});
   const [terminateHeight, setTerminateHeight] = useState({});
   const [, setMenu] = useRecoilState(menuState);
+  const numbers = useGetNumbers();
 
   useEffect(() => {
     const account = accountRef.current.clientHeight;
@@ -95,8 +97,10 @@ const Sidebar = () => {
               })
             }
           >
-            <i class="far fa-images"></i> <span>My ads</span>{" "}
-            <span className="dashboard__sidebar__section__item__count">0</span>
+            <i class="far fa-images"></i> <span>My ads</span>
+            <span className="dashboard__sidebar__section__item__count">
+              {numbers.data ? numbers.data.getNumbers.cars : 0}
+            </span>
           </li>
           <li className="dashboard__sidebar__section__item">
             <i class="fas fa-heart"></i> <span>Favorite ads</span>{" "}
@@ -122,10 +126,21 @@ const Sidebar = () => {
             <span>Conversations</span>
             <span className="dashboard__sidebar__section__item__count">0</span>
           </li>
-          <li className="dashboard__sidebar__section__item">
+          <li
+            className="dashboard__sidebar__section__item"
+            onClick={() =>
+              setMenu({
+                index: 6,
+                title: "Transactions",
+              })
+            }
+          >
             <i class="fas fa-dollar-sign"></i>
             <span>Transactions</span>
-            <span className="dashboard__sidebar__section__item__count">0</span>
+            <span className="dashboard__sidebar__section__item__count">
+              {" "}
+              {numbers.data ? numbers.data.getNumbers.transactions : 0}
+            </span>
           </li>
         </ul>
       </div>

@@ -24,7 +24,7 @@ const Overlay = (props) => {
   };
   if (data && data.signIn) {
     setModalShow(false);
-    if (redirection.path) {
+    if (redirection && redirection.path) {
       setRedirection({ path: "null", state: {} });
       return (
         <Redirect

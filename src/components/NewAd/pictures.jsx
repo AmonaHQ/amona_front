@@ -5,13 +5,19 @@ import { useDropzone } from "react-dropzone";
 import { storage } from "../../firebase/firebase";
 import ScrollTop from "../../utilities/scroll-top";
 import { adDetailsProgressState, detailsState } from "../../recoil/atoms";
-import { useCreateCarMutation } from "../../operations/mutations";
+import {
+  useCreateCarMutation,
+  useUpdateCarMutation,
+} from "../../operations/mutations";
 
-const Details = ({ plan: { price, type, planId } }) => {
+import removeTypeName from "../../utilities/remove-typename";
+
+const Details = ({ plan: { price, type, planId, _id } }) => {
   const [canSelect, setCanSelect] = useState(true);
   const [, setStep] = useRecoilState(adDetailsProgressState);
   const [details, setDetails] = useRecoilState(detailsState);
   const [createCar, { error, data }] = useCreateCarMutation();
+  const [updateCar] = useUpdateCarMutation();
   const [images, setImages] = useState(details.pictures || []);
 
   const onDrop = (acceptedFiles) => {
@@ -65,7 +71,15 @@ const Details = ({ plan: { price, type, planId } }) => {
     allDetails.plan = { price, type, planId };
     allDetails.pricing = planId;
     setDetails(allDetails);
-    if (!next) {
+    if (!next || _id) {
+      const { location } = allDetails;
+      const refinedLocation = removeTypeName(location, "__typename");
+      const newDetails = { ...allDetails };
+      newDetails.location = refinedLocation;
+      console.log("refined", refinedLocation);
+      if (_id) {
+        return updateCar({ ...newDetails, _id: _id });
+      }
       createCar(allDetails);
     } else setStep(2);
   };
@@ -79,7 +93,7 @@ const Details = ({ plan: { price, type, planId } }) => {
       <Redirect
         loggedIn
         to={{
-          pathname: "/",
+          pathname: "/account",
           state: {
             payment: true,
           },
@@ -156,7 +170,7 @@ const Details = ({ plan: { price, type, planId } }) => {
           }}
           disabled={!images.length || images.includes("loading")}
         >
-          {price === 0 ? "Finish" : "Next"}
+          {_id ? "Update" : price === 0 ? "Finish" : "Next"}
         </button>
       </form>
     </>

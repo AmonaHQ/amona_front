@@ -1,8 +1,6 @@
 import Axios from "axios";
 import { useRecoilState } from "recoil";
-import {
-  busyOverlayState,
-} from "../recoil/atoms";
+import { busyOverlayState } from "../recoil/atoms";
 
 // const refineVehicleMakeResult = (rawData, selector) => {
 //   const refinedResult = [];
@@ -19,8 +17,6 @@ import {
 //   return refinedResult;
 // };
 const useGetVehicleMake = () => {
-
-
   const getVehicleMake = async (keyword) => {
     if (keyword.length >= 2) {
       try {
@@ -62,4 +58,27 @@ const useGetVehicleModel = () => {
 
   return [getVehicleModel];
 };
-export { useGetVehicleMake, useGetVehicleModel };
+
+const useGetVehicleModelByMake = () => {
+  const [, setIsBusy] = useRecoilState(busyOverlayState);
+
+  const getVehicleModel = async (make) => {
+    setIsBusy(true);
+    try {
+      const vehicleModels = await Axios.get(
+        `https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformake/${make}?format=json`
+      );
+      if (vehicleModels.data && vehicleModels.data.Results) {
+        console.log("models by make", vehicleModels.data.Results);
+        setIsBusy(false);
+        return vehicleModels.data.Results;
+      }
+    } catch (error) {
+      setIsBusy(false);
+      return error.message;
+    }
+  };
+
+  return [getVehicleModel];
+};
+export { useGetVehicleMake, useGetVehicleModel,useGetVehicleModelByMake };

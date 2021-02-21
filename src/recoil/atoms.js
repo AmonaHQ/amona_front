@@ -8,7 +8,7 @@ const loginState = atom({
 const menuState = atom({
   key: "menuState",
   default: {
-    index: 0,
+    index: 1,
     title: "Personal Home",
     useQuery: useUserQuery,
   },

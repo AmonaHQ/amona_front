@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 import { Route, Switch, BrowserRouter } from "react-router-dom";
 import { CookiesProvider } from "react-cookie";
+// import { Offline, Online } from "react-detect-offline";
 import { RecoilRoot } from "recoil";
 import Home from "./components/Home/index";
 import AllAds from "./components/AllAds/index";
@@ -17,13 +18,17 @@ function App() {
   return (
     <CookiesProvider>
       <RecoilRoot>
-      <BusyOverlay/>
+        <BusyOverlay />
         <Fragment>
           <BrowserRouter>
             <Switch>
               <Route exact path="/" component={Home}></Route>
               <Route exact path="/ads" component={AllAds}></Route>{" "}
-              <Route exact path="/ads/details" component={AddDetails}></Route>
+              <Route
+                exact
+                path="/ads/details/:permalink"
+                component={AddDetails}
+              ></Route>
               <Route exact path="/login" component={Login}></Route>
               <Route exact path="/ads/new/pricing" component={Pricing}></Route>
               <Route
@@ -40,7 +45,6 @@ function App() {
             </Switch>
           </BrowserRouter>
         </Fragment>
-       
       </RecoilRoot>
     </CookiesProvider>
   );

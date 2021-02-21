@@ -16,7 +16,7 @@ import {
 
 const NewAd = (props) => {
   const [steps] = useState([
-    <Details />,
+    <Details plan={props.location.state} />,
     <Pictures plan={props.location.state} />,
     <Payment plan={props.location.state} />,
   ]);
@@ -70,20 +70,24 @@ const NewAd = (props) => {
           >
             Photos
           </div>
-          {props.location.state && props.location.state.price > 0 && (
-            <div
-              className="new-ad__steps__step"
-              onClick={() => {
-                if (details.pictures) {
-                  setStep(2);
-                }
-              }}
-              style={details.pictures && { color: "blue", cursor: "pointer" }}
-            >
-              Payment
-            </div>
+          {props.location.state &&
+            props.location.state.price > 0 &&
+            !props.location.state._id && (
+              <div
+                className="new-ad__steps__step"
+                onClick={() => {
+                  if (details.pictures) {
+                    setStep(2);
+                  }
+                }}
+                style={details.pictures && { color: "blue", cursor: "pointer" }}
+              >
+                Payment
+              </div>
+            )}
+          {!props.location.state._id && (
+            <div className="new-ad__steps__step">Finish</div>
           )}
-          <div className="new-ad__steps__step">Finish</div>
         </div>
 
         <div

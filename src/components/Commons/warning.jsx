@@ -2,11 +2,11 @@ import React from "react";
 import { showWarningState } from "../../recoil/atoms";
 import { useRecoilState } from "recoil";
 
-const Overlay = ({ callback }) => {
+const Overlay = ({ callback, message }) => {
   const [modalShow, setModalShow] = useRecoilState(showWarningState);
 
   const handleDelete = () => {
-    setModalShow(false)
+    setModalShow(false);
     callback();
   };
 
@@ -19,7 +19,7 @@ const Overlay = ({ callback }) => {
           <div className="overlay__content__body__warning">
             <i class="fas fa-exclamation-circle"></i>
             <h2>Are you sure ?</h2>
-            <p>you will not be able to recover this data</p>
+            <p>{message || "You will not be able to recover this data"}</p>
             <div>
               <button onClick={handleDelete}>Yes delete it!</button>{" "}
               <button onClick={() => setModalShow(false)}>No keep it</button>

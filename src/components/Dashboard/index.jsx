@@ -6,12 +6,21 @@ import Header from "../Commons/header";
 import Footer from "../Commons/footer";
 import PersonalHome from "./PersonalHome";
 import MyAds from "./my-ads";
+import Transactions from "./transactions";
 import Sidebar from "./sidebar";
-import ScrollTop from "../../utilities/scroll-top"
+import ScrollTop from "../../utilities/scroll-top";
 
 const Dashboard = () => {
   const menu = useRecoilValue(currentMenuState);
-  const [screens] = useState([<PersonalHome />, <MyAds />]);
+  const [screens] = useState([
+    <PersonalHome />,
+    <MyAds />,
+    ,
+    ,
+    ,
+    ,
+    <Transactions />,
+  ]);
 
   useEffect(() => {
     localStorage.setItem("authToken", null);
@@ -28,7 +37,7 @@ const Dashboard = () => {
       </div>
 
       <Footer />
-      <ScrollTop/>
+      <ScrollTop />
     </div>
   );
 };

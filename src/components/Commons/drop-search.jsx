@@ -79,6 +79,12 @@ const DropSearch = ({
     }
   }, [data, showItems]);
 
+  useEffect(() => {
+    if (value[identifier]) {
+      setDisplay(value);
+    }
+  }, [value]);
+
   useEffect(() => {}, [showItems]);
 
   return (
@@ -115,6 +121,7 @@ const DropSearch = ({
           />
           <ul className="drop-search__dropdown__list">
             {dropDownData &&
+              dropDownData.length &&
               dropDownData.map((item, index) => (
                 <li
                   key={index}

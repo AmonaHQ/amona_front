@@ -107,7 +107,10 @@ const Loaded = ({ data }) => {
 
   return (
     <>
-      <Warning callback={handleDelete} />
+      <Warning
+        callback={handleDelete}
+        message="You will not be able to recover this photo"
+      />
       <div className="dashboard__main__quick-stat card">
         <figure className="dashboard__main__quick-stat__avatar">
           <i
@@ -211,7 +214,9 @@ const Loaded = ({ data }) => {
                     <div className="dashboard__main__profile__photo__body__img__background__menu">
                       <i className="fa fa-pencil"></i>
                       <i
-                        className={`fa fa-trash ${deleteFileResult.loading && "deleting"}`}
+                        className={`fa fa-trash ${
+                          deleteFileResult.loading && "deleting"
+                        }`}
                         onMouseOver={() => setCanSelect(false)}
                         onMouseLeave={() => setCanSelect(true)}
                         onClick={() => setModalShow(true)}

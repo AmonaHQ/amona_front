@@ -7,6 +7,8 @@ import {
   loginModalState,
   userDetailsState,
   adDetailsProgressState,
+  detailsState,
+  showWarningState,
 } from "../../recoil/atoms";
 import logo from "../../assets/img/cheapcars.png";
 import Overlay from "./overlay";
@@ -24,6 +26,8 @@ const Header = (props) => {
   const [, setMenu] = useRecoilState(menuState);
   const [height] = useState(isLoggedIn || authToken ? "49rem" : "15rem");
   const [, setAdStep] = useRecoilState(adDetailsProgressState);
+  const [, setDetails] = useRecoilState(detailsState);
+  const [, setWarning] = useRecoilState(showWarningState);
 
   const listRef = useRef();
   const resetShow = () => {
@@ -151,7 +155,11 @@ const Header = (props) => {
           <NavLink to="/ads/new">
             <button
               className="post-ad region__city__button--header"
-              onClick={() => setAdStep(0)}
+              onClick={() => {
+                setAdStep(0);
+                setDetails({});
+                setWarning(false);
+              }}
             >
               <i className="post-ad__icon fa fa-plus-circle"></i> Post Ad FREE
             </button>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SunEditor from "suneditor-react";
 import ReCAPTCHA from "react-google-recaptcha";
 import Autocomplete from "react-google-autocomplete";
@@ -10,6 +10,7 @@ import "suneditor/dist/css/suneditor.min.css"; // Import Sun Editor's CSS File
 import {
   useGetVehicleMake,
   useGetVehicleModel,
+  useGetVehicleModelByMake,
 } from "../../services/cars.service";
 import {
   vehicleModelState,
@@ -21,7 +22,9 @@ import {
 import {
   useCategoriesQuery,
   useSellerDetailsQuery,
+  useGetCarById,
 } from "../../operations/queries";
+import { useUpdateCarMutation } from "../../operations/mutations";
 import {
   year,
   transmission,
@@ -35,11 +38,14 @@ import {
 } from "../../constants/ad-details";
 
 import ScrollTop from "../../utilities/scroll-top";
+import removeProperty from "../../utilities/remove-typename";
 
-const Details = () => {
+const Details = ({ plan }) => {
   const [, setErrorMessage] = useRecoilState(errorMessageState);
   const [getMake] = useGetVehicleMake();
   const [getModel] = useGetVehicleModel();
+  const [getModelByMake] = useGetVehicleModelByMake();
+  const [getCar] = useGetCarById();
   const [model, setModel] = useRecoilState(vehicleModelState);
   const [details, setDetails] = useRecoilState(detailsState);
   const [inputs, setInputs] = useState({});
@@ -48,11 +54,12 @@ const Details = () => {
   const { loading, data } = useCategoriesQuery();
   const seller = useSellerDetailsQuery();
   const [, setIsBusy] = useRecoilState(busyOverlayState);
+  const [updateCar, updateCarResult] = useUpdateCarMutation();
   const getVehicleMake = async (keyword) => {
     return await getMake(keyword);
   };
 
-  if (loading || seller.loading) {
+  if (loading || seller.loading || updateCarResult.loading) {
     setIsBusy(true);
   } else {
     setIsBusy(false);
@@ -61,6 +68,13 @@ const Details = () => {
     handleSelect(make, identifier, name);
     const model = await getModel(make.Make_ID);
     if (model) {
+      setModel(model);
+    }
+  };
+
+  const getModelByCarMake = async () => {
+    const model = await getModelByMake(plan.make);
+    if (model && model.length) {
       setModel(model);
     }
   };
@@ -94,6 +108,7 @@ const Details = () => {
       event.target.name === "negotiable"
         ? event.target.checked
         : value;
+    console.log("negotiable", allDetails);
     setDetails(allDetails);
   };
   const handleDescriptionChange = (content) => {
@@ -178,21 +193,53 @@ const Details = () => {
         };
   };
 
+  const getPermalink = () => {
+    const randomNumber = Math.floor(Math.random() * 100000 + 1);
+    const permalink =
+      details.title
+        .replace(/[^a-z0-9]+/gi, "-")
+        .replace(/^-*|-*$/g, "")
+        .toLowerCase() +
+      "-" +
+      randomNumber;
+
+    return permalink;
+  };
+
   const handleNext = () => {
     const validateFields = findEmptyFields();
-    console.log("is empty", validateFields);
 
     if (validateFields.success) {
-      const allDetails = { ...details };
+      let allDetails = { ...details };
       allDetails.description = description;
+      allDetails.permalink = getPermalink();
+
+      if (!plan._id) {
+        setStep(1);
+      } else {
+        allDetails = removeProperty(allDetails, "permalink");
+        const refinedLocation = removeProperty(
+          allDetails.location,
+          "__typename"
+        );
+        const newDetails = { ...allDetails };
+
+        newDetails.location = refinedLocation;
+        updateCar({ ...newDetails, _id: plan._id });
+      }
       setDetails(allDetails);
-      setStep(1);
       setErrorMessage({ success: true });
     } else {
       setErrorMessage(validateFields);
       window.scrollTo(0, 0);
     }
   };
+
+  useEffect(() => {
+    getCar({ _id: plan._id });
+    getModelByCarMake();
+  }, [plan._id]);
+
   return (
     <>
       {" "}
@@ -215,6 +262,7 @@ const Details = () => {
               showItems={true}
               placeholder="Choose category"
               value={{ title: details.category }}
+              details={details}
             />
           </div>
         </div>
@@ -281,7 +329,7 @@ const Details = () => {
               data={model}
               inputId="model"
               placeholder="Select"
-              disable={!model.length}
+              disable={!model.length && !plan._id}
               showItems={true}
               value={{ Model_Name: details.model }}
             />
@@ -356,6 +404,7 @@ const Details = () => {
                 allDetails.location = null;
                 setDetails(allDetails);
               }}
+              value={details.location && details.location.formatted_address}
             />
           </div>
         </div>
@@ -381,8 +430,12 @@ const Details = () => {
                 name="negotiable"
                 onChange={handleChange}
                 checked={details.negotiable}
+                id="negotiable"
               />
-              <label htmlFor="" className="formGroup__inputs__tripple__label">
+              <label
+                htmlFor="negotiable"
+                className="formGroup__inputs__tripple__label"
+              >
                 Negotiable
               </label>
             </div>
@@ -616,7 +669,7 @@ const Details = () => {
           />
         </div>
         <button type="button" className="form__button" onClick={handleNext}>
-          Next
+          {plan._id ? "Update" : "Next"}
         </button>
       </form>
     </>
