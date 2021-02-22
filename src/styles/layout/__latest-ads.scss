@@ -33,6 +33,7 @@
       position: relative;
       overflow: hidden;
       cursor: pointer;
+      max-width: 48rem;
       &:hover {
         background-color: rgb(243, 240, 240);
         border: 1px solid rgb(228, 222, 222);

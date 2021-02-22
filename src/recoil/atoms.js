@@ -78,6 +78,10 @@ const errorMessageState = atom({
   key: "errorMessageState",
   default: { success: true, emptyFields: null },
 });
+const updateIdState = atom({
+  key: "updateIdState",
+  default: null,
+});
 export {
   loginState,
   menuState,
@@ -95,4 +99,5 @@ export {
   detailsState,
   adDetailsProgressState,
   errorMessageState,
+  updateIdState,
 };

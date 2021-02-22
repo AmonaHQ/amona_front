@@ -4,24 +4,59 @@ import TimeAgo from "timeago-react";
 import Loader from "react-loader-spinner";
 import { useParams } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
+import GoogleMapReact from "google-map-react";
+import { Icon } from "@iconify/react";
+import locationIcon from "@iconify/icons-mdi/map-marker";
 import Header from "../Commons/header";
 import Footer from "../Commons/footer";
 import StarRatings from "react-star-ratings";
 import ImageCarousel from "../Commons/image-carousel";
 import ImageCarouselSkeleton from "../Commons/image-carousel-skeleton";
-import { useGetCarByPermalink } from "../../operations/queries";
+import {
+  useGetCarByPermalink,
+  useRecommendedAdQuery,
+} from "../../operations/queries";
 import numberWithCommas from "../../utilities/number-with-commas";
 import { recommendedPosts } from "../../constants/latest-posts";
 import Post from "../Commons/post";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import ScrollTop from "../../utilities/scroll-top";
 import "react-tabs/style/react-tabs.css";
+import "./map.css";
 
 const AdDetails = (props) => {
   const [isLoggedIn] = useState(false);
+  const [buttonText, setButtonText] = useState(null);
   const { permalink } = useParams();
   const cars = useGetCarByPermalink(permalink);
+  const [getRecommendedAds, recommendedAdsResults] = useRecommendedAdQuery();
 
+  const location = {
+    address:
+      cars.data && cars.data.findOneCarByPermalink.location.formatted_address,
+    lat: cars.data && cars.data.findOneCarByPermalink.location.lat,
+    lng: cars.data && cars.data.findOneCarByPermalink.location.lng,
+  };
+
+  const LocationPin = ({ text }) => (
+    <div className="pin">
+      <Icon icon={locationIcon} className="pin-icon" />
+      <p className="pin-text">{text}</p>
+    </div>
+  );
+
+  useEffect(() => {
+    if (cars.data) {
+      const {
+        make,
+        model,
+        year,
+        category,
+        _id,
+      } = cars.data.findOneCarByPermalink;
+      getRecommendedAds({ make, model, year, category, _id });
+    }
+  }, [cars.data]);
   return (
     <div className="ad-details">
       <Header />
@@ -283,104 +318,16 @@ const AdDetails = (props) => {
                           Features:
                         </span>
                         <div className="ad-details__main__details__ad__features__container">
-                          <div>
-                            <i className="fa fa-check"></i>{" "}
-                            <span>Adaptable air bags </span>
-                          </div>
-                          <div>
-                            <i className="fa fa-check"></i>{" "}
-                            <span>Adaptable headlights </span>
-                          </div>
-                          <div>
-                            <i className="fa fa-check"></i> <span>Alarm</span>
-                          </div>
-                          <div>
-                            <i className="fa fa-check"></i>{" "}
-                            <span>Alloy wheels </span>
-                          </div>
-                          <div>
-                            <i className="fa fa-check"></i>{" "}
-                            <span>Back-up assistance </span>
-                          </div>
-                          <div>
-                            <i className="fa fa-check"></i>{" "}
-                            <span>Bluetooth </span>
-                          </div>
-                          <div>
-                            <i className="fa fa-check"></i>{" "}
-                            <span>Dual Climate Controls </span>
-                          </div>
-                          <div>
-                            <i className="fa fa-check"></i>{" "}
-                            <span>Entertainment Package </span>
-                          </div>
-                          <div>
-                            <i className="fa fa-check"></i>{" "}
-                            <span>Fabric Seats </span>
-                          </div>
-                          <div>
-                            <i className="fa fa-check"></i>{" "}
-                            <span>Fog lights </span>
-                          </div>
-                          <div>
-                            <i className="fa fa-check"></i>{" "}
-                            <span>Heated mirrors </span>
-                          </div>
-                          <div>
-                            <i className="fa fa-check"></i>{" "}
-                            <span>Heated Seats </span>
-                          </div>
-                          <div>
-                            <i className="fa fa-check"></i>{" "}
-                            <span>Memory Seats </span>
-                          </div>
-                          <div>
-                            <i className="fa fa-check"></i>{" "}
-                            <span>Power locks </span>
-                          </div>
-                          <div>
-                            <i className="fa fa-check"></i>{" "}
-                            <span>Power mirrors </span>
-                          </div>
-                          <div>
-                            <i className="fa fa-check"></i>{" "}
-                            <span>Power Seat </span>
-                          </div>
-                          <div>
-                            <i className="fa fa-check"></i>{" "}
-                            <span>Power windows </span>
-                          </div>
-                          <div>
-                            <i className="fa fa-check"></i>{" "}
-                            <span>Security System </span>
-                          </div>
-                          <div>
-                            <i className="fa fa-check"></i>{" "}
-                            <span>Self-parking devices </span>
-                          </div>
-                          <div>
-                            <i className="fa fa-check"></i>{" "}
-                            <span>Self-parking devices </span>
-                          </div>
-
-                          <div>
-                            <i className="fa fa-check"></i> <span>Sensors</span>
-                          </div>
-                          <div>
-                            <i className="fa fa-check"></i>
-                            <span>Stability Control </span>
-                          </div>
-                          <div>
-                            <i className="fa fa-check"></i> <span>Sunroof</span>
-                          </div>
-                          <div>
-                            <i className="fa fa-check"></i>
-                            <span>Tire pressure alert system </span>
-                          </div>
-                          <div>
-                            <i className="fa fa-check"></i>
-                            <span> Tow package </span>
-                          </div>
+                          {cars.data.findOneCarByPermalink.features &&
+                            cars.data.findOneCarByPermalink.features.length &&
+                            cars.data.findOneCarByPermalink.features.map(
+                              (feature) => (
+                                <div>
+                                  <i className="fa fa-check"></i>{" "}
+                                  <span>{feature} </span>
+                                </div>
+                              )
+                            )}
                         </div>
                       </div>
                       <div className="ad-details__main__details__ad__tags">
@@ -487,15 +434,17 @@ const AdDetails = (props) => {
               </figure>
               <div className="ad-details__sidebar__owner__data">
                 <span>Posted By</span>
-                <h3>Anthony Jacob</h3>
+                <h3>{`${cars.data.findOneCarByPermalink.owner.firstName} ${cars.data.findOneCarByPermalink.owner.lastName}`}</h3>
                 <figure className="ad-details__sidebar__owner__rating">
                   <StarRatings
-                    rating={4.5}
+                    rating={cars.data.findOneCarByPermalink.owner.rating}
                     starDimension="1.5rem"
                     starSpacing=".1rem"
                     starRatedColor="gold"
                   />
-                  <span>4 rating</span>
+                  <span>
+                    {cars.data.findOneCarByPermalink.owner.votes} rating
+                  </span>
                 </figure>
               </div>
             </>
@@ -523,15 +472,20 @@ const AdDetails = (props) => {
             <>
               {" "}
               <span>
-                <i className="fa fa-map-marker"></i> <span>Location</span>
+                <i className="fa fa-map-marker"></i> <span>State</span>
               </span>
               <span className="ad-details__sidebar__joined__location">
-                Yaba
+                {cars.data.findOneCarByPermalink.location.stateName}
               </span>
               <span>
                 <i className="fa fa-user"></i> <span>Joined</span>
               </span>
-              <span>1 week ago</span>
+              <span>
+                <TimeAgo
+                  datetime={cars.data.findOneCarByPermalink.owner.created_at}
+                  locale="en"
+                />
+              </span>
             </>
           )}
         </div>
@@ -552,10 +506,20 @@ const AdDetails = (props) => {
             />
           ) : (
             <>
-              {" "}
-              <button disabled={cars.loading}>
-                <i className="fa fa-phone"></i> Phone Number
-              </button>
+              {buttonText ? (
+                <a href={`tel:${buttonText}`}>{buttonText}</a>
+              ) : (
+                <button
+                  type="reset"
+                  disabled={cars.loading}
+                  onClick={() =>
+                    setButtonText(cars.data.findOneCarByPermalink.phoneNumber)
+                  }
+                >
+                  <i className="fa fa-phone"></i> Phone Number
+                </button>
+              )}
+
               <button disabled={cars.loading}>
                 <i class="fas fa-envelope-open-text"></i> Send a message
               </button>
@@ -576,17 +540,21 @@ const AdDetails = (props) => {
                 }}
               />
             ) : (
-              <iframe
-                title="google-map"
-                id="googleMaps"
-                scrolling="no"
-                marginheight="0"
-                marginwidth="0"
-                src="https://www.google.com/maps/embed/v1/place?key=AIzaSyD4tXE0aB-04Bksr1vqAab90qt35Gy-hMw&amp;q=Yaba%2CNigeria&amp;language=en"
-                width="100%"
-                height="250"
-                frameborder="0"
-              ></iframe>
+              <div className="google-map">
+                <GoogleMapReact
+                  bootstrapURLKeys={{
+                    key: process.env.REACT_APP_GOOGLE_MAP_API,
+                  }}
+                  defaultCenter={location}
+                  defaultZoom={9}
+                >
+                  <LocationPin
+                    lat={location.lat}
+                    lng={location.lng}
+                    // text={location.address}
+                  />
+                </GoogleMapReact>
+              </div>
             )}
           </div>
         </div>
@@ -639,11 +607,12 @@ const AdDetails = (props) => {
             <figure className="ad-details__line"></figure>
           </div>
 
-          {/* <div className="all-ads__posts__posts__cars all-ads__posts__posts__cars--recommended">
-          {recommendedPosts.map((post, index) => (
-            <Post index={index} post={post} />
-          ))}
-        </div> */}
+          <div className="all-ads__posts__posts__cars all-ads__posts__posts__cars--recommended">
+            {recommendedAdsResults.data &&
+              recommendedAdsResults.data.recommendedAds.cars.map(
+                (post, index) => <Post index={index} post={post} />
+              )}
+          </div>
         </div>
       )}
 

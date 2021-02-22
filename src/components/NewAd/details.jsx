@@ -18,6 +18,7 @@ import {
   detailsState,
   adDetailsProgressState,
   errorMessageState,
+  updateIdState,
 } from "../../recoil/atoms";
 import {
   useCategoriesQuery,
@@ -54,6 +55,7 @@ const Details = ({ plan }) => {
   const { loading, data } = useCategoriesQuery();
   const seller = useSellerDetailsQuery();
   const [, setIsBusy] = useRecoilState(busyOverlayState);
+  const [, setUpdateId] = useRecoilState(updateIdState);
   const [updateCar, updateCarResult] = useUpdateCarMutation();
   const getVehicleMake = async (keyword) => {
     return await getMake(keyword);
@@ -225,6 +227,7 @@ const Details = ({ plan }) => {
         const newDetails = { ...allDetails };
 
         newDetails.location = refinedLocation;
+        setUpdateId(plan._id);
         updateCar({ ...newDetails, _id: plan._id });
       }
       setDetails(allDetails);

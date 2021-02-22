@@ -191,6 +191,55 @@ const useCarQuery = () => {
   });
 };
 
+const useRecommendedAdQuery = () => {
+  const GET_CARS = gql`
+    query getCars($input: RecommendedInputType!) {
+      recommendedAds(input: $input) {
+        cars {
+          owner {
+            firstName
+            rating
+          }
+          category
+          title
+          make
+          model
+          price
+          location {
+            stateName
+          }
+          created_at
+          hidePhoneNumber
+          pictures
+          pricing {
+            type
+            badge {
+              backgroundColor
+              color
+            }
+          }
+          permalink
+        }
+      }
+    }
+  `;
+
+  const [getRecommended, getRecommendedResults] =  useLazyQuery(GET_CARS, {
+   
+    onCompleted: (data) => {
+      console.log("recommended ads", data)
+    },
+  });
+
+  const getRecommendedAds = (data) => {
+    getRecommended({
+       variables: { input: data },
+    })
+  }
+
+  return [getRecommendedAds, getRecommendedResults]
+};
+
 const useCarByOwnerQuery = () => {
   const [, , , getId] = useAuthToken();
 
@@ -287,7 +336,7 @@ const useGetCarById = () => {
 
 const useGetCarByPermalink = (permalink) => {
   const [details, setDetails] = useRecoilState(detailsState);
-  const GET_CAR_BY_ID = gql`
+  const GET_CAR_BY_PERMALINK = gql`
     query getCar($input: FindByPermalinkType!) {
       findOneCarByPermalink(input: $input) {
         _id
@@ -326,17 +375,18 @@ const useGetCarByPermalink = (permalink) => {
           lastName
           rating
           votes
+          created_at
         }
         created_at
       }
     }
   `;
 
-  return useQuery(GET_CAR_BY_ID, {
+  return useQuery(GET_CAR_BY_PERMALINK, {
     variables: { input: { permalink } },
-    onCompleted:(data) => {
-      console.log("permalink", data)
-    }
+    onCompleted: (data) => {
+      console.log("permalink", data);
+    },
   });
 };
 
@@ -367,6 +417,7 @@ const useTransactionQuery = () => {
     onCompleted: (data) => {
       setBusy(false);
     },
+    
   });
 };
 
@@ -400,4 +451,5 @@ export {
   useTransactionQuery,
   useGetNumbers,
   useGetCarByPermalink,
+  useRecommendedAdQuery
 };

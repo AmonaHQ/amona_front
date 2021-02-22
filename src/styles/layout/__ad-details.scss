@@ -1,5 +1,4 @@
 .ad-details {
-
   &__navigation {
     grid-column: 3 / 11;
     grid-row: 2 / 3;
@@ -511,11 +510,37 @@
       border: 1px solid var(--color-border);
       border-top: 0;
       padding: 2rem;
-      & button:first-child {
+
+      & a {
+        display: block;
+        padding: 1.2rem;
+        font-size: 1.3rem;
+        border: none;
+        border-radius: 0.5rem;
+        text-align: center;
+
+        &,
+        &:link,
+        &:visited {
+          text-decoration: none;
+          color: white;
+          font-weight: bold;
+        }
+      }
+
+      & button:first-child,
+      & a {
         margin-bottom: 1rem;
         color: white;
         background-color: #f1c40f;
         transition: all 0.3s;
+        & a,
+        & a:link,
+        & a:visited {
+          text-decoration: none;
+          color: white;
+          font-weight: bold;
+        }
 
         &:hover {
           background-color: #c29d0b;

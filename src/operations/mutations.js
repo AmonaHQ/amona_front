@@ -12,6 +12,7 @@ import {
   busyOverlayState,
   detailsState,
   adDetailsProgressState,
+  updateIdState,
 } from "../recoil/atoms";
 import { currentImageUploadType } from "../recoil/selectors";
 import removeTypeName from "../utilities/remove-typename";
@@ -457,6 +458,7 @@ const useDeleteAllCarMutation = () => {
 
 const useUpdateCarMutation = () => {
   const [, setIsBusy] = useRecoilState(busyOverlayState);
+  const [carId] = useRecoilState(updateIdState);
   const [, , , getId] = useAuthToken();
   const alert = useAlert();
   const UPDATE_CAR = gql`
@@ -475,6 +477,74 @@ const useUpdateCarMutation = () => {
           title
           price
           pictures
+        }
+      }
+    }
+  `;
+  const GET_CAR_BY_ID = gql`
+    query getCar($input: FindByIdType!) {
+      findOneCar(input: $input) {
+        _id
+        category
+        title
+        description
+        make
+        model
+        year
+        condition
+        mileage
+        location {
+          stateName
+          formatted_address
+          countryName
+          lat
+          lng
+          place_id
+        }
+        price
+        pictures
+        transmission
+        numberOfDoors
+        fuelType
+        drive
+        interiorColor
+        exteriorColor
+        videoLink
+        features
+        phoneNumber
+        negotiable
+        email
+        hidePhoneNumber
+      }
+    }
+  `;
+  const GET_CARS = gql`
+    query getCars {
+      cars {
+        cars {
+          owner {
+            firstName
+            rating
+          }
+          category
+          title
+          make
+          model
+          price
+          location {
+            stateName
+          }
+          created_at
+          hidePhoneNumber
+          pictures
+          pricing {
+            type
+            badge {
+              backgroundColor
+              color
+            }
+          }
+          permalink
         }
       }
     }
@@ -501,6 +571,18 @@ const useUpdateCarMutation = () => {
         query: GET_CARS_BY_OWNER,
         variables: {
           input: { _id: getId("user") },
+        },
+      },
+      {
+        query: GET_CARS,
+      },
+      {
+        query: GET_CAR_BY_ID,
+        onCompleted: (data) => {
+          console.log("refetched", data);
+        },
+        variables: {
+          input: { _id: carId },
         },
       },
     ],
