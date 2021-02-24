@@ -20,7 +20,8 @@
       grid-template-columns: repeat(3, 1fr);
     }
     @include respond(small) {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2,1fr);
+      justify-self: center;
     }
     @include respond(tinier) {
       grid-template-columns: 1fr;
@@ -33,7 +34,6 @@
       position: relative;
       overflow: hidden;
       cursor: pointer;
-      max-width: 48rem;
       &:hover {
         background-color: rgb(243, 240, 240);
         border: 1px solid rgb(228, 222, 222);
@@ -48,7 +48,7 @@
         align-items: center;
         justify-content: center;
         padding-top: 1rem;
-        min-height: 18rem;
+        // min-height: 18rem;
         // border: 1px solid black;
         & img {
           height: 95%;
@@ -91,7 +91,7 @@
         }
 
         & span:first-child {
-          margin-right: 4rem;
+          // margin-right: 4rem;
         }
         & i {
           color: grey;

@@ -291,7 +291,7 @@
 
       &__filter {
         color: grey;
-        
+
         & span {
           background-color: rgb(238, 236, 236);
           color: var(--color-primary-dark);
@@ -326,13 +326,20 @@
 
       grid-row-gap: 1rem;
 
+      &--recommended {
+        & a,
+        & a:link,
+        & a:visited {
+          text-decoration: none;
+        }
+      }
+
       @include respond(small) {
         grid-template-columns: repeat(2, 1fr);
       }
       @include respond(tinier) {
         grid-template-columns: 1fr;
       }
-
     }
 
     &--load-more {

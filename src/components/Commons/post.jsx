@@ -9,7 +9,7 @@ const Post = ({ index, post }) => {
   return (
     <Link
       to={{
-        pathname: `ads/details/${post.permalink}`,
+        pathname: `/ads/details/${post.permalink}`,
         state: {
           permalink: post.permalink,
         },

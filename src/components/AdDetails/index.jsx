@@ -12,6 +12,7 @@ import Footer from "../Commons/footer";
 import StarRatings from "react-star-ratings";
 import ImageCarousel from "../Commons/image-carousel";
 import ImageCarouselSkeleton from "../Commons/image-carousel-skeleton";
+import PostSkeleton from "../Commons/post-skeleton";
 import {
   useGetCarByPermalink,
   useRecommendedAdQuery,
@@ -546,7 +547,7 @@ const AdDetails = (props) => {
                     key: process.env.REACT_APP_GOOGLE_MAP_API,
                   }}
                   defaultCenter={location}
-                  defaultZoom={9}
+                  defaultZoom={11}
                 >
                   <LocationPin
                     lat={location.lat}
@@ -600,7 +601,7 @@ const AdDetails = (props) => {
           </div>
         </div>
       </div>
-      {!cars.loading && (
+    
         <div className="ad-details__recommended">
           <div className="ad-details__recommended__title">
             <h1 className="h1">Recommended Cars For You</h1>
@@ -608,13 +609,13 @@ const AdDetails = (props) => {
           </div>
 
           <div className="all-ads__posts__posts__cars all-ads__posts__posts__cars--recommended">
-            {recommendedAdsResults.data &&
-              recommendedAdsResults.data.recommendedAds.cars.map(
-                (post, index) => <Post index={index} post={post} />
-              )}
+            {recommendedAdsResults.data
+              ? recommendedAdsResults.data.recommendedAds.cars.map(
+                  (post, index) => <Post index={index} post={post} />
+                )
+              : ["", "", ""].map(() => <PostSkeleton />)}
           </div>
         </div>
-      )}
 
       <Footer />
     </div>
