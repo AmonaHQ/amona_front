@@ -36,9 +36,7 @@ const Overlay = (props) => {
       );
     }
   }
-  if (error) {
-    console.log("this is error", error.graphQLError);
-  }
+
 
   return (
     <div className={`overlay ${modalShow && "overlay--show"}`}>

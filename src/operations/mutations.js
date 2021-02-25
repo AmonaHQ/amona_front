@@ -599,6 +599,73 @@ const useUpdateCarMutation = () => {
 
   return [updateACar, updateCarResult];
 };
+
+const useCreateFeedbackMutation = (postId) => {
+  const [, , , getId] = useAuthToken();
+  const alert = useAlert();
+  const CREATE_FEEDBACK = gql`
+    mutation createFeedback($input: FeedbackInputType!) {
+      createFeedback(input: $input) {
+        _id
+      }
+    }
+  `;
+
+  const GET_FEEDBACK = gql`
+    query getFeedback($input: FeedbacksByPostType!) {
+      feedbackByPost(input: $input) {
+        feedbacks {
+          feedback
+          rating
+          user {
+            firstName
+            profileImage {
+              url
+            }
+          }
+          created_at
+        }
+      }
+    }
+  `;
+
+  const [createFeedback, createFeedbackResult] = useMutation(CREATE_FEEDBACK, {
+    errorPolicy: "all",
+
+    onCompleted: (data) => {
+      if (data && data.createFeedback) {
+        alert.success(
+          <div
+            className="alerts"
+            style={{
+              color: "white",
+              textTransform: "capitalize",
+              fontSize: "1.5rem",
+            }}
+          >
+            <span className="float-left">Your review has been published!</span>
+          </div>
+        );
+      }
+    },
+    refetchQueries: [
+      {
+        query: GET_FEEDBACK,
+        errorPolicy: "ignore",
+        variables: {
+          input: { postId },
+        },
+      },
+    ],
+  });
+
+  const createNewFeedback = (data) => {
+    createFeedback({
+      variables: { input: { ...data, user: getId("user") } },
+    });
+  };
+  return [createNewFeedback, createFeedbackResult];
+};
 export {
   useRegistrationMutation,
   useUpdateUserMutation,
@@ -609,4 +676,5 @@ export {
   useDeleteCarMutation,
   useDeleteAllCarMutation,
   useUpdateCarMutation,
+  useCreateFeedbackMutation,
 };

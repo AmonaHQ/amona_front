@@ -5,7 +5,6 @@ import TimeAgo from "timeago-react";
 import numberWithCommas from "../../utilities/number-with-commas";
 
 const Post = ({ index, post }) => {
-  console.log("post", post);
   return (
     <Link
       to={{

@@ -6,7 +6,7 @@ const PostSkeleton = ({ index, post }) => {
       <Skeleton
         height="18rem"
         width="95%"
-        style={{ margin: "auto", marginTop: "1rem" }}
+        style={{ margin: "auto", marginTop: "1rem", display: "block" }}
       />
       <h3 className="latest-ads__latest-ads__latest-ad__title">
         <Skeleton style={{ marginTop: "1.5rem" }} />

@@ -30,7 +30,7 @@ const Login = () => {
       <Header />
       <div className="login__container">
         <div className="login__container__card">
-        {error && !loading && (
+          {error && !loading && (
             <p className="error-message animated shake">
               {error && error.graphQLErrors[0].message}
             </p>

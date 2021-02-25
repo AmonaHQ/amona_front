@@ -224,20 +224,19 @@ const useRecommendedAdQuery = () => {
     }
   `;
 
-  const [getRecommended, getRecommendedResults] =  useLazyQuery(GET_CARS, {
-   
+  const [getRecommended, getRecommendedResults] = useLazyQuery(GET_CARS, {
     onCompleted: (data) => {
-      console.log("recommended ads", data)
+      console.log("recommended ads", data);
     },
   });
 
   const getRecommendedAds = (data) => {
     getRecommended({
-       variables: { input: data },
-    })
-  }
+      variables: { input: data },
+    });
+  };
 
-  return [getRecommendedAds, getRecommendedResults]
+  return [getRecommendedAds, getRecommendedResults];
 };
 
 const useCarByOwnerQuery = () => {
@@ -371,6 +370,7 @@ const useGetCarByPermalink = (permalink) => {
         hidePhoneNumber
         negotiable
         owner {
+          _id
           firstName
           lastName
           rating
@@ -417,7 +417,6 @@ const useTransactionQuery = () => {
     onCompleted: (data) => {
       setBusy(false);
     },
-    
   });
 };
 
@@ -438,6 +437,40 @@ const useGetNumbers = () => {
     },
   });
 };
+
+const useGetFeedbacksByPost = () => {
+  const GET_FEEDBACK = gql`
+    query getFeedback($input: FeedbacksByPostType!) {
+      feedbackByPost(input: $input) {
+        feedbacks {
+          feedback
+          rating
+          user {
+            firstName
+            profileImage {
+              url
+            }
+          }
+          created_at
+        }
+      }
+    }
+  `;
+
+  const [getFeedbacks, getFeedbacksResult] = useLazyQuery(GET_FEEDBACK, {
+    errorPolicy: "ignore",
+   
+    onCompleted: (data) => {},
+  });
+
+  const getFeedbacksByPost = (postId) => {
+    getFeedbacks({
+      variables: { input: { postId } },
+    });
+  };
+
+  return [getFeedbacksByPost, getFeedbacksResult];
+};
 export {
   useUserQuery,
   useLoginQuery,
@@ -451,5 +484,6 @@ export {
   useTransactionQuery,
   useGetNumbers,
   useGetCarByPermalink,
-  useRecommendedAdQuery
+  useRecommendedAdQuery,
+  useGetFeedbacksByPost,
 };

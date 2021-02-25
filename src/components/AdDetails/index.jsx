@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
+import { useRecoilState } from "recoil";
 import TimeAgo from "timeago-react";
 import Loader from "react-loader-spinner";
 import { useParams } from "react-router-dom";
@@ -13,12 +14,16 @@ import StarRatings from "react-star-ratings";
 import ImageCarousel from "../Commons/image-carousel";
 import ImageCarouselSkeleton from "../Commons/image-carousel-skeleton";
 import PostSkeleton from "../Commons/post-skeleton";
+import { userDetailsState } from "../../recoil/atoms";
+import { useAuthToken } from "../../token";
 import {
   useGetCarByPermalink,
   useRecommendedAdQuery,
+  useGetFeedbacksByPost,
 } from "../../operations/queries";
+import { useCreateFeedbackMutation } from "../../operations/mutations";
 import numberWithCommas from "../../utilities/number-with-commas";
-import { recommendedPosts } from "../../constants/latest-posts";
+import { useLoginQuery } from "../../operations/queries";
 import Post from "../Commons/post";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import ScrollTop from "../../utilities/scroll-top";
@@ -26,11 +31,23 @@ import "react-tabs/style/react-tabs.css";
 import "./map.css";
 
 const AdDetails = (props) => {
-  const [isLoggedIn] = useState(false);
+  const [authToken, , , getId] = useAuthToken();
+  const [inputData, setInputData] = useRecoilState(userDetailsState);
+  const [starRating, setStarRating] = useState(0);
+  const [login, { loading, error }] = useLoginQuery();
   const [buttonText, setButtonText] = useState(null);
+  const [feedbacks, setFeedbacks] = useState(null);
   const { permalink } = useParams();
   const cars = useGetCarByPermalink(permalink);
   const [getRecommendedAds, recommendedAdsResults] = useRecommendedAdQuery();
+  const [getFeedbacks, getFeedbacksResult] = useGetFeedbacksByPost();
+  const [feedbackError, setFeedbackError] = useState(null);
+
+  const [createFeedback, createFeedbackResult] = useCreateFeedbackMutation(
+    cars.data &&
+      cars.data.findOneCarByPermalink &&
+      cars.data.findOneCarByPermalink._id
+  );
 
   const location = {
     address:
@@ -46,7 +63,62 @@ const AdDetails = (props) => {
     </div>
   );
 
+  const handleChange = (event) => {
+    const data = { ...inputData };
+    data[event.target.name] = event.target.value;
+    setInputData(data);
+  };
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    login(inputData);
+  };
+
+  const handleFeedbackChange = (event) => {
+    setFeedbackError(null);
+    setFeedbacks(event.target.value);
+  };
+
+  const handleFeedbackSubmit = (event) => {
+    event.preventDefault();
+    console.log(
+      "owner",
+      getId("user").toString(),
+      cars.data.findOneCarByPermalink.owner._id
+    );
+    setFeedbackError(null);
+    if (
+      cars.data.findOneCarByPermalink.owner._id.toString() ===
+      getId("user").toString()
+    ) {
+      return setFeedbackError("You cannot review your own ad");
+    }
+    if (!feedbacks || !feedbacks.length) {
+      setFeedbackError("Review is required");
+    } else if (!starRating || starRating === 0) {
+      setFeedbackError("Star rating is required");
+    } else {
+      const { owner, _id } = cars.data.findOneCarByPermalink;
+      const data = {
+        feedback: feedbacks,
+        rating: starRating,
+        owner: owner._id,
+        postId: _id,
+      };
+
+      createFeedback(data);
+    }
+  };
+
+  if (createFeedbackResult.error) {
+    console.log(
+      "feedbacks error",
+      createFeedbackResult.error.graphQLErrors[0].message
+    );
+  }
   useEffect(() => {
+    setFeedbacks(null);
+    setFeedbackError(null);
+    setStarRating(0)
     if (cars.data) {
       const {
         make,
@@ -56,8 +128,10 @@ const AdDetails = (props) => {
         _id,
       } = cars.data.findOneCarByPermalink;
       getRecommendedAds({ make, model, year, category, _id });
+      getFeedbacks(_id);
     }
   }, [cars.data]);
+
   return (
     <div className="ad-details">
       <Header />
@@ -169,7 +243,14 @@ const AdDetails = (props) => {
           <Tabs>
             <TabList disabled={cars.loading}>
               <Tab disabled={cars.loading}>Ad Details</Tab>
-              <Tab disabled={cars.loading}>Reviews (0)</Tab>
+              <Tab disabled={cars.loading}>
+                Reviews (
+                {getFeedbacksResult.data &&
+                getFeedbacksResult.data.feedbackByPost
+                  ? getFeedbacksResult.data.feedbackByPost.feedbacks.length
+                  : 0}
+                )
+              </Tab>
             </TabList>
 
             <TabPanel>
@@ -352,24 +433,104 @@ const AdDetails = (props) => {
             </TabPanel>
             <TabPanel>
               <div className="ad-details__main__details__review">
-                {isLoggedIn ? (
+                {getFeedbacksResult.data &&
+                  getFeedbacksResult.data.feedbackByPost &&
+                  !getFeedbacksResult.loading && (
+                    <>
+                      {getFeedbacksResult.data.feedbackByPost.feedbacks.map(
+                        (feedback) => (
+                          <div className="feedback">
+                            <div className="feedback__avatar">
+                              <figure
+                                style={{
+                                  background: feedback.user.profileImage
+                                    ? `url(${feedback.user.profileImage.url})`
+                                    : "unset",
+                                }}
+                              >
+                                {(!feedback.user.profileImage ||
+                                  !feedback.user.profileImage.url) && (
+                                  <span>
+                                    {feedback.user.firstName[0].toUpperCase()}
+                                  </span>
+                                )}
+                              </figure>
+                            </div>
+                            <div className="feedback__content">
+                              <div className="feedback__content__top">
+                                <h3>{feedback.user.firstName}</h3>{" "}
+                                <StarRatings
+                                  rating={feedback.rating}
+                                  starDimension="1.5rem"
+                                  starSpacing=".3rem"
+                                  starRatedColor="gold"
+                                />
+                              </div>
+
+                              <div className="feedback__content__body">
+                                {" "}
+                                <p className="feedback__content__top__comment">
+                                  {feedback.feedback}
+                                </p>
+                                <p className="feedback__content__top__comment">
+                                  <TimeAgo
+                                    datetime={feedback.created_at}
+                                    locale="en"
+                                  />
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      )}
+                    </>
+                  )}
+
+                {authToken ? (
                   <>
-                    <form className="ad-details__main__details__review__form">
+                    {feedbackError && (
+                      <span className="login-error animated shake">
+                        {feedbackError}
+                      </span>
+                    )}
+                    {createFeedbackResult.error &&
+                      !feedbackError &&
+                      feedbacks &&
+                      starRating && (
+                        <span className="login-error animated shake">
+                          {createFeedbackResult.error.graphQLErrors[0].message}
+                        </span>
+                      )}
+                    <form
+                      onSubmit={handleFeedbackSubmit}
+                      className="ad-details__main__details__review__form"
+                    >
                       <textarea
                         className="ad-details__main__details__review__textarea"
                         name=""
                         id=""
                         cols="30"
                         rows="10"
+                        name="feedback"
+                        value={feedbacks}
+                        onChange={handleFeedbackChange}
                       ></textarea>
                       <div className="ad-details__main__details__review__button">
                         <StarRatings
-                          rating={4.5}
+                          rating={starRating}
                           starDimension="1.5rem"
                           starSpacing=".3rem"
                           starRatedColor="gold"
+                          changeRating={(rating) => setStarRating(rating)}
                         />
-                        <button>Leave a Review</button>
+                        <button
+                          className={
+                            createFeedbackResult.loading && "feeback-loading"
+                          }
+                          type="submit"
+                        >
+                          <span> Leave a Review</span>
+                        </button>
                       </div>
                     </form>
                     <div className="ad-details__main__details__review__bottom-text">
@@ -378,15 +539,40 @@ const AdDetails = (props) => {
                     </div>
                   </>
                 ) : (
-                  <form className="ad-details__main__details__review__login">
+                  <form
+                    className="ad-details__main__details__review__login"
+                    onSubmit={handleSubmit}
+                  >
                     <div className="ad-details__main__details__review__login__intro">
                       <span>Note:</span>{" "}
                       <span>You must be logged in to post a review. </span>
                     </div>
+                    {error && !loading && (
+                      <span className="login-error animated shake">
+                        {error && error.graphQLErrors[0].message}
+                      </span>
+                    )}
                     <div className="ad-details__main__details__review__login__inputs">
-                      <input type="email" placeholder="Email or Phone" />
-                      <input type="password" placeholder="password" />
-                      <button>Login</button>
+                      <input
+                        type="email"
+                        placeholder="Email"
+                        name="email"
+                        value={inputData.email}
+                        onChange={handleChange}
+                      />
+                      <input
+                        type="password"
+                        placeholder="password"
+                        name="password"
+                        value={inputData.password}
+                        onChange={handleChange}
+                      />
+                      <button
+                        className={loading && "login-loading"}
+                        type="submit"
+                      >
+                        <span> Login</span>
+                      </button>
                     </div>
 
                     <div className="ad-details__main__details__review__login__captcha">
@@ -601,21 +787,21 @@ const AdDetails = (props) => {
           </div>
         </div>
       </div>
-    
-        <div className="ad-details__recommended">
-          <div className="ad-details__recommended__title">
-            <h1 className="h1">Recommended Cars For You</h1>
-            <figure className="ad-details__line"></figure>
-          </div>
 
-          <div className="all-ads__posts__posts__cars all-ads__posts__posts__cars--recommended">
-            {recommendedAdsResults.data
-              ? recommendedAdsResults.data.recommendedAds.cars.map(
-                  (post, index) => <Post index={index} post={post} />
-                )
-              : ["", "", ""].map(() => <PostSkeleton />)}
-          </div>
+      <div className="ad-details__recommended">
+        <div className="ad-details__recommended__title">
+          <h1 className="h1">Recommended Cars For You</h1>
+          <figure className="ad-details__line"></figure>
         </div>
+
+        <div className="all-ads__posts__posts__cars all-ads__posts__posts__cars--recommended">
+          {recommendedAdsResults.data
+            ? recommendedAdsResults.data.recommendedAds.cars.map(
+                (post, index) => <Post index={index} post={post} />
+              )
+            : ["", "", ""].map(() => <PostSkeleton />)}
+        </div>
+      </div>
 
       <Footer />
     </div>
