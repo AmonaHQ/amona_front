@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useCarByOwnerQuery } from "../../operations/queries";
-import { useDeleteCarMutation, useDeleteAllCarMutation } from "../../operations/mutations";
+import {
+  useDeleteCarMutation,
+  useDeleteAllCarMutation,
+  useDeleteStateMutation,
+} from "../../operations/mutations";
 import Warning from "../Commons/warning";
 import { useRecoilState } from "recoil";
 import { showWarningState } from "../../recoil/atoms";
@@ -10,19 +14,22 @@ import numberWithCommas from "../../utilities/number-with-commas";
 const MyAds = () => {
   const [, setModalShow] = useRecoilState(showWarningState);
   const [carId, setCarId] = useState(null);
+  const [stateName, setStateName] = useState(null);
   const [checked, setChecked] = useState([]);
   const [deleteCar] = useDeleteCarMutation();
-  const [deleteAllCars] = useDeleteAllCarMutation()
+  const [deleteState] = useDeleteStateMutation();
+  const [deleteAllCars] = useDeleteAllCarMutation();
   const { data } = useCarByOwnerQuery();
 
-  const handleDelete = (id) => {
+  const handleDelete = () => {
     deleteCar({ _id: carId });
+    deleteState({ stateName });
   };
 
   const handleDeleteAll = () => {
-    deleteAllCars({items: checked})
-    console.log("items to delete", checked)
-  }
+    deleteAllCars({ items: checked });
+    console.log("items to delete", checked);
+  };
 
   const handleSelect = (id) => {
     let allSelected = [...checked];
@@ -41,7 +48,6 @@ const MyAds = () => {
         setChecked(allSelections);
       } else setChecked([]);
     }
-
   };
   return (
     <div className="dashboard__main__my-ads card">
@@ -198,6 +204,7 @@ const MyAds = () => {
                             onClick={() => {
                               console.log("clicked");
                               setCarId(car._id);
+                              setStateName(car.location.stateName);
                               setModalShow(true);
                             }}
                           >

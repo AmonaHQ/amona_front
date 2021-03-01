@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import categories from "../../constants/categories";
 import states from "../../constants/states";
 import ScrollableDropdown from "../Commons/scrollable-dropdown";
@@ -6,17 +6,34 @@ import Header from "../Commons/header";
 import allPosts from "../../constants/latest-posts";
 import Post from "../Commons/post";
 import Footer from "../Commons/footer";
-const AllAds = () => {
+import { useGetSearchResult } from "../../operations/queries";
+import ScrollTop from "../../utilities/scroll-top";
+
+const AllAds = ({ location }) => {
   const [activeTab, setActiveTab] = useState(1);
   const [tabs] = useState([
     { title: "All Ads", count: 149 },
     { title: "Individual Ads", count: 750 },
     { title: "Dealers", count: 124 },
   ]);
-  //   categories.unshift({ title: "All Categories" });
+
+  const [getSearchResult, { data, loading }] = useGetSearchResult();
+
+  useEffect(() => {
+    const { state } = location;
+    if (state) {
+      const stateName = state.stateName;
+      console.log("props", location);
+      getSearchResult({ ...(stateName && { stateName }) });
+    } else {
+      getSearchResult();
+    }
+  }, []);
+
   return (
     <div className="all-ads-container">
       <Header />
+      <ScrollTop />
       <div className="all-ads__search">
         <div className="search-box search-box--ads">
           <div className="search-box__box">
@@ -216,10 +233,11 @@ const AllAds = () => {
                 </div>
               </div>
             </div>
-            <div className="all-ads__posts__posts__cars">
-              {allPosts.map((post, index) => (
-                <Post index={index} post={post} />
-              ))}
+            <div className="all-ads__posts__posts__cars all-ads__posts__posts__cars--search">
+              {data &&
+                data.carSearchFilter.cars.map((post, index) => (
+                  <Post index={index} post={post} />
+                ))}
             </div>
             <div className="latest-ads__view-more all-ads__posts__posts--load-more">
               <div className="latest-ads__view-more__btn">

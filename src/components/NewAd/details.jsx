@@ -25,7 +25,10 @@ import {
   useSellerDetailsQuery,
   useGetCarById,
 } from "../../operations/queries";
-import { useUpdateCarMutation } from "../../operations/mutations";
+import {
+  useUpdateCarMutation,
+  useUpdateStateMutation,
+} from "../../operations/mutations";
 import {
   year,
   transmission,
@@ -46,6 +49,7 @@ const Details = ({ plan }) => {
   const [getMake] = useGetVehicleMake();
   const [getModel] = useGetVehicleModel();
   const [getModelByMake] = useGetVehicleModelByMake();
+  const [location, setLocation] = useState({});
   const [getCar] = useGetCarById();
   const [model, setModel] = useRecoilState(vehicleModelState);
   const [details, setDetails] = useRecoilState(detailsState);
@@ -57,6 +61,7 @@ const Details = ({ plan }) => {
   const [, setIsBusy] = useRecoilState(busyOverlayState);
   const [, setUpdateId] = useRecoilState(updateIdState);
   const [updateCar, updateCarResult] = useUpdateCarMutation();
+  const [updateState] = useUpdateStateMutation();
   const getVehicleMake = async (keyword) => {
     return await getMake(keyword);
   };
@@ -229,6 +234,15 @@ const Details = ({ plan }) => {
         newDetails.location = refinedLocation;
         setUpdateId(plan._id);
         updateCar({ ...newDetails, _id: plan._id });
+        if (
+          location.stateName &&
+          location.stateName !== refinedLocation.stateName
+        ) {
+          updateState({
+            oldState: location.stateName,
+            newState: refinedLocation.stateName,
+          });
+        }
       }
       setDetails(allDetails);
       setErrorMessage({ success: true });
@@ -404,6 +418,9 @@ const Details = ({ plan }) => {
               componentRestrictions={{ country: "ng" }}
               onChange={() => {
                 const allDetails = { ...details };
+                if (allDetails.location && !location.stateName) {
+                  setLocation(allDetails.location);
+                }
                 allDetails.location = null;
                 setDetails(allDetails);
               }}

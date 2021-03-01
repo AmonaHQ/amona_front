@@ -11,6 +11,7 @@ import { detailsState } from "../../recoil/atoms";
 import {
   useCreatePaymentMutation,
   useCreateCarMutation,
+  useCreateStateMutation,
 } from "../../operations/mutations";
 
 const Details = ({ plan }) => {
@@ -18,9 +19,8 @@ const Details = ({ plan }) => {
   const [details] = useRecoilState(detailsState);
   const [createCar, createCarResult] = useCreateCarMutation();
   const [createPayment, createPaymentResult] = useCreatePaymentMutation();
-
+  const [createState] = useCreateStateMutation();
   const onSuccess = (reference) => {
-    // Implementation for whatever you want to do with reference and after success call.
     const { price, planId, type, currency, currencySymbol } = plan;
     createCar(details);
     createPayment({
@@ -32,7 +32,7 @@ const Details = ({ plan }) => {
       currency,
       amount: price,
     });
-    console.log(reference, details);
+    createState({ stateName: details.location.stateName });
   };
 
   // you can call this function anything

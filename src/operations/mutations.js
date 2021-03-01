@@ -16,17 +16,28 @@ import {
 } from "../recoil/atoms";
 import { currentImageUploadType } from "../recoil/selectors";
 import removeTypeName from "../utilities/remove-typename";
+import {
+  CREATE_USER,
+  UPDATE_USER,
+  DELETE_IMAGE,
+  NEW_CAR,
+  NEW_PAYMENT,
+  DELETE_CAR,
+  UPDATE_CAR,
+  CREATE_FEEDBACK,
+  CREATE_STATE,
+  UPDATE_STATE,
+  DELETE_STATE,
+} from "./specifications/mutations.spec";
+import {
+  GET_CARS_BY_OWNER,
+  GET_NUMBERS,
+  GET_FEEDBACK,
+  GET_CAR_BY_ID,
+  GET_CARS,
+} from "./specifications/queries.spec";
 
 const useRegistrationMutation = () => {
-  const CREATE_USER = gql`
-    mutation CreateUser($newUser: RegistrationInput!) {
-      signUp(input: $newUser) {
-        _id
-        token
-      }
-    }
-  `;
-
   const [, setIsLoggedIn] = useRecoilState(loginState);
   const [, setAuthToken] = useAuthToken();
   const [createUser, createUserResult] = useMutation(CREATE_USER, {
@@ -56,15 +67,6 @@ const useUpdateUserMutation = () => {
   const [, setUser] = useRecoilState(userDetailsState);
   const alert = useAlert();
 
-  const UPDATE_USER = gql`
-    mutation user($input: UpdateUserInput!) {
-      updateUser(input: $input) {
-        _id
-        token
-        firstName
-      }
-    }
-  `;
   const [updateUser, updateUserResult] = useMutation(UPDATE_USER, {
     errorPolicy: "all",
     onCompleted: (data) => {
@@ -145,14 +147,7 @@ const useDeleteImageMutation = () => {
   const [, , , getId] = useAuthToken();
   const [, setDeleteState] = useRecoilState(deleteProfileImageState);
   const alert = useAlert();
-  const DELETE_IMAGE = gql`
-    mutation deleteImage($input: FindProfileImagetype!) {
-      deleteImage(input: $input) {
-        status
-        success
-      }
-    }
-  `;
+
   const [deleteImage, deleteImageResult] = useMutation(DELETE_IMAGE, {
     errorPolicy: "all",
     onCompleted: (data) => {
@@ -187,33 +182,7 @@ const useCreateCarMutation = () => {
   const [, setDetails] = useRecoilState(detailsState);
   const [, setProgress] = useRecoilState(adDetailsProgressState);
   const alert = useAlert();
-  const NEW_CAR = gql`
-    mutation createCar($input: CarInputType!) {
-      createCar(input: $input) {
-        title
-      }
-    }
-  `;
-  const GET_CARS_BY_OWNER = gql`
-    query getCars($input: FindByIdType!) {
-      carsByOwner(input: $input) {
-        cars {
-          _id
-          title
-          price
-          pictures
-        }
-      }
-    }
-  `;
-  const GET_NUMBERS = gql`
-    query getNumbers($input: FindByIdType!) {
-      getNumbers(input: $input) {
-        transactions
-        cars
-      }
-    }
-  `;
+
   const [createCar, createCarResult] = useMutation(NEW_CAR, {
     errorPolicy: "all",
     onCompleted: (data) => {
@@ -267,13 +236,6 @@ const useCreateCarMutation = () => {
 const useCreatePaymentMutation = () => {
   const [, setIsBusy] = useRecoilState(busyOverlayState);
   const [, , , getId] = useAuthToken();
-  const NEW_PAYMENT = gql`
-    mutation createPayment($input: PaymentInputType!) {
-      createPayment(input: $input) {
-        _id
-      }
-    }
-  `;
 
   const [createPayment, createPaymentResult] = useMutation(NEW_PAYMENT, {
     errorPolicy: "all",
@@ -296,23 +258,7 @@ const useDeleteCarMutation = () => {
   const [, , , getId] = useAuthToken();
   const [, setIsBusy] = useRecoilState(busyOverlayState);
   const alert = useAlert();
-  const DELETE_CAR = gql`
-    mutation deleteCar($input: FindByIdType!) {
-      deleteCar(input: $input) {
-        status
-        success
-        itemId
-      }
-    }
-  `;
-  const GET_NUMBERS = gql`
-    query getNumbers($input: FindByIdType!) {
-      getNumbers(input: $input) {
-        transactions
-        cars
-      }
-    }
-  `;
+
   const [deleteCar, deleteCarResult] = useMutation(DELETE_CAR, {
     errorPolicy: "all",
     onCompleted: (data) => {
@@ -331,18 +277,6 @@ const useDeleteCarMutation = () => {
       );
     },
     update: (cache, { data }) => {
-      const GET_CARS_BY_OWNER = gql`
-        query getCars($input: FindByIdType!) {
-          carsByOwner(input: $input) {
-            cars {
-              _id
-              title
-              price
-              pictures
-            }
-          }
-        }
-      `;
       const existingCars = cache.readQuery({
         query: GET_CARS_BY_OWNER,
         variables: {
@@ -385,34 +319,7 @@ const useDeleteAllCarMutation = () => {
   const [, , , getId] = useAuthToken();
   const [, setIsBusy] = useRecoilState(busyOverlayState);
   const alert = useAlert();
-  const DELETE_CAR = gql`
-    mutation deleteAllCars($input: DeleteAllType!) {
-      deleteAllCars(input: $input) {
-        status
-        success
-      }
-    }
-  `;
-  const GET_CARS_BY_OWNER = gql`
-    query getCars($input: FindByIdType!) {
-      carsByOwner(input: $input) {
-        cars {
-          _id
-          title
-          price
-          pictures
-        }
-      }
-    }
-  `;
-  const GET_NUMBERS = gql`
-    query getNumbers($input: FindByIdType!) {
-      getNumbers(input: $input) {
-        transactions
-        cars
-      }
-    }
-  `;
+
   const [deleteCar, deleteCarResult] = useMutation(DELETE_CAR, {
     errorPolicy: "all",
     onCompleted: (data) => {
@@ -461,94 +368,7 @@ const useUpdateCarMutation = () => {
   const [carId] = useRecoilState(updateIdState);
   const [, , , getId] = useAuthToken();
   const alert = useAlert();
-  const UPDATE_CAR = gql`
-    mutation updateCar($input: CarUpdateType!) {
-      updateCar(input: $input) {
-        success
-        status
-      }
-    }
-  `;
-  const GET_CARS_BY_OWNER = gql`
-    query getCars($input: FindByIdType!) {
-      carsByOwner(input: $input) {
-        cars {
-          _id
-          title
-          price
-          pictures
-        }
-      }
-    }
-  `;
-  const GET_CAR_BY_ID = gql`
-    query getCar($input: FindByIdType!) {
-      findOneCar(input: $input) {
-        _id
-        category
-        title
-        description
-        make
-        model
-        year
-        condition
-        mileage
-        location {
-          stateName
-          formatted_address
-          countryName
-          lat
-          lng
-          place_id
-        }
-        price
-        pictures
-        transmission
-        numberOfDoors
-        fuelType
-        drive
-        interiorColor
-        exteriorColor
-        videoLink
-        features
-        phoneNumber
-        negotiable
-        email
-        hidePhoneNumber
-      }
-    }
-  `;
-  const GET_CARS = gql`
-    query getCars {
-      cars {
-        cars {
-          owner {
-            firstName
-            rating
-          }
-          category
-          title
-          make
-          model
-          price
-          location {
-            stateName
-          }
-          created_at
-          hidePhoneNumber
-          pictures
-          pricing {
-            type
-            badge {
-              backgroundColor
-              color
-            }
-          }
-          permalink
-        }
-      }
-    }
-  `;
+
   const [updateCar, updateCarResult] = useMutation(UPDATE_CAR, {
     onCompleted: (data) => {
       setIsBusy(false);
@@ -603,31 +423,6 @@ const useUpdateCarMutation = () => {
 const useCreateFeedbackMutation = (postId) => {
   const [, , , getId] = useAuthToken();
   const alert = useAlert();
-  const CREATE_FEEDBACK = gql`
-    mutation createFeedback($input: FeedbackInputType!) {
-      createFeedback(input: $input) {
-        _id
-      }
-    }
-  `;
-
-  const GET_FEEDBACK = gql`
-    query getFeedback($input: FeedbacksByPostType!) {
-      feedbackByPost(input: $input) {
-        feedbacks {
-          feedback
-          rating
-          user {
-            firstName
-            profileImage {
-              url
-            }
-          }
-          created_at
-        }
-      }
-    }
-  `;
 
   const [createFeedback, createFeedbackResult] = useMutation(CREATE_FEEDBACK, {
     errorPolicy: "all",
@@ -666,6 +461,56 @@ const useCreateFeedbackMutation = (postId) => {
   };
   return [createNewFeedback, createFeedbackResult];
 };
+
+const useCreateStateMutation = () => {
+  const [createState, createStateResult] = useMutation(CREATE_STATE, {
+    errorPolicy: "all",
+    onCompleted: (data) => {
+      console.log("state created", data);
+    },
+  });
+
+  const createNewState = (data) => {
+    createState({
+      variables: { input: data },
+    });
+  };
+
+  return [createNewState, createStateResult];
+};
+
+const useUpdateStateMutation = () => {
+  const [updateState, updateStateResult] = useMutation(UPDATE_STATE, {
+    errorPolicy: "all",
+    onCompleted: (data) => {
+      console.log("state UPDATED", data);
+    },
+  });
+
+  const updateOldState = (data) => {
+    console.log("data", data);
+    updateState({
+      variables: { input: data },
+    });
+  };
+
+  return [updateOldState, updateStateResult];
+};
+
+const useDeleteStateMutation = () => {
+  const [deleteState, deleteStateResult] = useMutation(DELETE_STATE, {
+    errorPolicy: "all",
+  });
+
+  const deleteAState = (data) => {
+    console.log("delete data", data);
+    deleteState({
+      variables: { input: data },
+    });
+  };
+
+  return [deleteAState, deleteStateResult];
+};
 export {
   useRegistrationMutation,
   useUpdateUserMutation,
@@ -677,4 +522,7 @@ export {
   useDeleteAllCarMutation,
   useUpdateCarMutation,
   useCreateFeedbackMutation,
+  useCreateStateMutation,
+  useUpdateStateMutation,
+  useDeleteStateMutation,
 };

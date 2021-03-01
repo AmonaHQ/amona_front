@@ -326,6 +326,15 @@
 
       grid-row-gap: 1rem;
 
+      &--search {
+        grid-template-columns: repeat(4, 1fr);
+        & a,
+        & a:link,
+        & a:visited {
+          text-decoration: none;
+        }
+      }
+
       &--recommended {
         & a,
         & a:link,

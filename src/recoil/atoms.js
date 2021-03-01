@@ -64,6 +64,11 @@ const busyOverlayState = atom({
   default: false,
 });
 
+const spinLoaderState = atom({
+  key: "spinLoaderState",
+  default: false,
+});
+
 const detailsState = atom({
   key: "detailsState",
   default: {},
@@ -95,6 +100,7 @@ export {
   redirectionState,
   vehicleMakeState,
   busyOverlayState,
+  spinLoaderState,
   vehicleModelState,
   detailsState,
   adDetailsProgressState,

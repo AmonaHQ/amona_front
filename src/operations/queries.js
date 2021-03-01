@@ -1,4 +1,3 @@
-import gql from "graphql-tag";
 import { useRecoilState } from "recoil";
 import { useQuery, useLazyQuery } from "@apollo/react-hooks";
 import { useAuthToken } from "../token";
@@ -8,22 +7,29 @@ import {
   imageUploadType,
   detailsState,
   busyOverlayState,
+  spinLoaderState,
 } from "../recoil/atoms";
 
+import {
+  GET_USER,
+  GET_CATEGORIES,
+  USER_LOGIN,
+  IMAGE_FILES,
+  CATEGORIES,
+  GET_CARS,
+  GET_CARS_BY_OWNER,
+  GET_CAR_BY_ID,
+  GET_CAR_BY_PERMALINK,
+  GET_TRANSSACTION,
+  GET_NUMBERS,
+  GET_FEEDBACK,
+  PRICINGS,
+  GET_RECOMMENDED_ADS,
+  GET_SEARCH_RESULT,
+  GET_STATES,
+} from "./specifications/queries.spec";
+
 const useUserQuery = () => {
-  const GET_USER = gql`
-    query user($input: FindByIdType!) {
-      getUser(input: $input) {
-        _id
-        firstName
-        lastName
-        email
-        phoneNumber
-        hidePhoneNumber
-        username
-      }
-    }
-  `;
   const [, , , getId] = useAuthToken();
   return useQuery(GET_USER, {
     variables: { input: { _id: getId("user") } },
@@ -32,15 +38,7 @@ const useUserQuery = () => {
 
 const useSellerDetailsQuery = () => {
   const [details, setDetails] = useRecoilState(detailsState);
-  const GET_CATEGORIES = gql`
-    query user($input: FindByIdType!) {
-      getUser(input: $input) {
-        email
-        phoneNumber
-        hidePhoneNumber
-      }
-    }
-  `;
+
   const [, , , getId] = useAuthToken();
   return useQuery(GET_CATEGORIES, {
     variables: { input: { _id: getId("user") } },
@@ -59,14 +57,6 @@ const useSellerDetailsQuery = () => {
 };
 
 const useLoginQuery = () => {
-  const USER_LOGIN = gql`
-    query signUser($input: LoginInput!) {
-      signIn(input: $input) {
-        _id
-        token
-      }
-    }
-  `;
   const [, setIsLoggedIn] = useRecoilState(loginState);
   const [, setInputData] = useRecoilState(userDetailsState);
   const [, setAuthToken] = useAuthToken();
@@ -89,13 +79,6 @@ const useLoginQuery = () => {
 const useImageQuery = () => {
   const [, , , getId] = useAuthToken();
   const [, setUploadType] = useRecoilState(imageUploadType);
-  const IMAGE_FILES = gql`
-    query image($input: FindProfileImagetype!) {
-      image(input: $input) {
-        url
-      }
-    }
-  `;
 
   return useQuery(IMAGE_FILES, {
     onCompleted: (data) => {
@@ -108,127 +91,30 @@ const useImageQuery = () => {
 };
 
 const usePricingsQuery = () => {
-  const PRICINGS = gql`
-    query pricings {
-      pricings {
-        success
-        status
-        pricings {
-          _id
-          type
-          currency
-          currencySymbol
-          price
-          features
-          highlights {
-            header
-            button
-            headerColor
-            buttonColor
-          }
-        }
-      }
-    }
-  `;
-
   return useQuery(PRICINGS);
 };
 
 const useCategoriesQuery = () => {
-  const CATEGORIES = gql`
-    query categories {
-      categories {
-        success
-        categories {
-          _id
-          title
-          thumbnail
-        }
-      }
-    }
-  `;
-
   return useQuery(CATEGORIES, {
     onCompleted: (data) => {},
   });
 };
 
 const useCarQuery = () => {
-  const GET_CARS = gql`
-    query getCars {
-      cars {
-        cars {
-          owner {
-            firstName
-            rating
-          }
-          category
-          title
-          make
-          model
-          price
-          location {
-            stateName
-          }
-          created_at
-          hidePhoneNumber
-          pictures
-          pricing {
-            type
-            badge {
-              backgroundColor
-              color
-            }
-          }
-          permalink
-        }
-      }
-    }
-  `;
-
   return useQuery(GET_CARS, {
     onCompleted: (data) => {},
   });
 };
 
 const useRecommendedAdQuery = () => {
-  const GET_CARS = gql`
-    query getCars($input: RecommendedInputType!) {
-      recommendedAds(input: $input) {
-        cars {
-          owner {
-            firstName
-            rating
-          }
-          category
-          title
-          make
-          model
-          price
-          location {
-            stateName
-          }
-          created_at
-          hidePhoneNumber
-          pictures
-          pricing {
-            type
-            badge {
-              backgroundColor
-              color
-            }
-          }
-          permalink
-        }
-      }
+  const [getRecommended, getRecommendedResults] = useLazyQuery(
+    GET_RECOMMENDED_ADS,
+    {
+      onCompleted: (data) => {
+        console.log("recommended ads", data);
+      },
     }
-  `;
-
-  const [getRecommended, getRecommendedResults] = useLazyQuery(GET_CARS, {
-    onCompleted: (data) => {
-      console.log("recommended ads", data);
-    },
-  });
+  );
 
   const getRecommendedAds = (data) => {
     getRecommended({
@@ -241,26 +127,6 @@ const useRecommendedAdQuery = () => {
 
 const useCarByOwnerQuery = () => {
   const [, , , getId] = useAuthToken();
-
-  const GET_CARS_BY_OWNER = gql`
-    query getCars($input: FindByIdType!) {
-      carsByOwner(input: $input) {
-        cars {
-          _id
-          title
-          price
-          pictures
-          make
-          pricing {
-            _id
-            currency
-            currencySymbol
-            type
-          }
-        }
-      }
-    }
-  `;
 
   return useQuery(GET_CARS_BY_OWNER, {
     variables: { input: { _id: getId("user") } },
@@ -280,43 +146,6 @@ const useCarByOwnerQuery = () => {
 
 const useGetCarById = () => {
   const [details, setDetails] = useRecoilState(detailsState);
-  const GET_CAR_BY_ID = gql`
-    query getCar($input: FindByIdType!) {
-      findOneCar(input: $input) {
-        _id
-        category
-        title
-        description
-        make
-        model
-        year
-        condition
-        mileage
-        location {
-          stateName
-          formatted_address
-          countryName
-          lat
-          lng
-          place_id
-        }
-        price
-        pictures
-        transmission
-        numberOfDoors
-        fuelType
-        drive
-        interiorColor
-        exteriorColor
-        videoLink
-        features
-        phoneNumber
-        negotiable
-        email
-        hidePhoneNumber
-      }
-    }
-  `;
 
   const [getCar, getCarResult] = useLazyQuery(GET_CAR_BY_ID, {
     onCompleted: (data) => {
@@ -335,52 +164,6 @@ const useGetCarById = () => {
 
 const useGetCarByPermalink = (permalink) => {
   const [details, setDetails] = useRecoilState(detailsState);
-  const GET_CAR_BY_PERMALINK = gql`
-    query getCar($input: FindByPermalinkType!) {
-      findOneCarByPermalink(input: $input) {
-        _id
-        category
-        title
-        description
-        make
-        model
-        year
-        condition
-        mileage
-        location {
-          stateName
-          formatted_address
-          countryName
-          lat
-          lng
-          place_id
-        }
-        price
-        pictures
-        transmission
-        numberOfDoors
-        fuelType
-        drive
-        interiorColor
-        exteriorColor
-        videoLink
-        features
-        phoneNumber
-        email
-        hidePhoneNumber
-        negotiable
-        owner {
-          _id
-          firstName
-          lastName
-          rating
-          votes
-          created_at
-        }
-        created_at
-      }
-    }
-  `;
 
   return useQuery(GET_CAR_BY_PERMALINK, {
     variables: { input: { permalink } },
@@ -393,24 +176,6 @@ const useGetCarByPermalink = (permalink) => {
 const useTransactionQuery = () => {
   const [, , , getId] = useAuthToken();
   const [, setBusy] = useRecoilState(busyOverlayState);
-  // setBusy(true);
-  const GET_TRANSSACTION = gql`
-    query getTransactions($input: FindByIdType!) {
-      paymentsByUser(input: $input) {
-        payments {
-          type
-          amount
-          paymentMethod
-          planId
-          user
-          paymentReference
-          currency
-          currencySymbol
-          created_at
-        }
-      }
-    }
-  `;
 
   return useQuery(GET_TRANSSACTION, {
     variables: { input: { _id: getId("user") } },
@@ -422,14 +187,7 @@ const useTransactionQuery = () => {
 
 const useGetNumbers = () => {
   const [, , , getId] = useAuthToken();
-  const GET_NUMBERS = gql`
-    query getNumbers($input: FindByIdType!) {
-      getNumbers(input: $input) {
-        transactions
-        cars
-      }
-    }
-  `;
+
   return useQuery(GET_NUMBERS, {
     variables: { input: { _id: getId("user") } },
     onCompleted: (data) => {
@@ -439,28 +197,8 @@ const useGetNumbers = () => {
 };
 
 const useGetFeedbacksByPost = () => {
-  const GET_FEEDBACK = gql`
-    query getFeedback($input: FeedbacksByPostType!) {
-      feedbackByPost(input: $input) {
-        feedbacks {
-          feedback
-          rating
-          user {
-            firstName
-            profileImage {
-              url
-            }
-          }
-          created_at
-        }
-      }
-    }
-  `;
-
   const [getFeedbacks, getFeedbacksResult] = useLazyQuery(GET_FEEDBACK, {
-    errorPolicy: "ignore",
-   
-    onCompleted: (data) => {},
+    errorPolicy: "all",
   });
 
   const getFeedbacksByPost = (postId) => {
@@ -470,6 +208,37 @@ const useGetFeedbacksByPost = () => {
   };
 
   return [getFeedbacksByPost, getFeedbacksResult];
+};
+
+const useGetSearchResult = () => {
+  const [, setBusy] = useRecoilState(spinLoaderState);
+  const [getSearchResults, searchResults] = useLazyQuery(GET_SEARCH_RESULT, {
+    onCompleted: (data) => {
+      setBusy(false);
+    },
+  });
+
+  if (searchResults.error) {
+    setBusy(false);
+  }
+
+  const getResults = (data = {}) => {
+    setBusy(true);
+    getSearchResults({
+      variables: { input: data },
+    });
+  };
+
+  return [getResults, searchResults];
+};
+
+const useStatesQuery = () => {
+  return useQuery(GET_STATES, {
+    errorPolicy: "all",
+    onCompleted: (data) => {
+      console.log("states", data);
+    },
+  });
 };
 export {
   useUserQuery,
@@ -486,4 +255,6 @@ export {
   useGetCarByPermalink,
   useRecommendedAdQuery,
   useGetFeedbacksByPost,
+  useGetSearchResult,
+  useStatesQuery,
 };

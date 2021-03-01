@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import StarRatings from "react-star-ratings";
+import { Link } from "react-router-dom";
 import { CarouselProvider, Slider, Slide } from "pure-react-carousel";
 import Map from "../Commons/map";
 import states from "../../constants/states";
@@ -12,13 +13,14 @@ import PostSkeleton from "../Commons/post-skeleton";
 import "pure-react-carousel/dist/react-carousel.es.css";
 import categories from "../../constants/categories";
 import ScrollTop from "../../utilities/scroll-top";
-import { useCarQuery } from "../../operations/queries";
+import { useCarQuery, useStatesQuery } from "../../operations/queries";
 
 const Home = (props) => {
   const [sponsoredPosts] = useState(posts);
   const [isPlaying, setIsPlaying] = useState(true);
 
   const { loading, data } = useCarQuery();
+  const statesResult = useStatesQuery();
 
   if (data) {
     const {
@@ -67,18 +69,30 @@ const Home = (props) => {
               Choose a city or region
             </h2>
             <ul className="region__city__list">
-              {states.map((state) => (
-                <li className="region__city__item" key={state}>
-                  <a href="/" className="region__city__link">
-                    {state}
-                  </a>
+              {statesResult.data && statesResult.data.states.states.map((state) => (
+                <li className="region__city__item" key={state.stateName}>
+                  <Link
+                    to={{
+                      pathname: "/ads",
+                      state: {
+                        stateName: state.stateName,
+                      },
+                    }}
+                    className="region__city__link"
+                  >
+                    {" "}
+                    {state.stateName} {` (${state.count})`}
+                  </Link>
                 </li>
               ))}
             </ul>
             <div className="region__city__button">
-              <button className="post-ad">
-                <i className="post-ad__icon fa fa-plus-circle"></i> Post Ad FREE
-              </button>
+              <Link to={{ pathname: "/ads/new" }}>
+                <button className="post-ad">
+                  <i className="post-ad__icon fa fa-plus-circle"></i> Post Ad
+                  FREE
+                </button>
+              </Link>
             </div>
           </div>
           <div className="region__map">

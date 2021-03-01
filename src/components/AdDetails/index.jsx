@@ -118,7 +118,7 @@ const AdDetails = (props) => {
   useEffect(() => {
     setFeedbacks(null);
     setFeedbackError(null);
-    setStarRating(0)
+    setStarRating(0);
     if (cars.data) {
       const {
         make,
@@ -533,10 +533,11 @@ const AdDetails = (props) => {
                         </button>
                       </div>
                     </form>
-                    <div className="ad-details__main__details__review__bottom-text">
-                      This ad has no reviews yet. Be the first to leave a
-                      review.
-                    </div>
+                    {getFeedbacksResult.error && (
+                      <div className="ad-details__main__details__review__bottom-text">
+                        {getFeedbacksResult.error.graphQLErrors[0].message}
+                      </div>
+                    )}
                   </>
                 ) : (
                   <form

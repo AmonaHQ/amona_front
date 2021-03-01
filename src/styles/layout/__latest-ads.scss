@@ -47,12 +47,13 @@
         align-items: center;
         justify-content: center;
         padding-top: 1rem;
+       
         // min-height: 18rem;
         // border: 1px solid black;
         & img {
           height: 95%;
           display: block;
-          width: 95%;
+          width: 95%; max-height: 15rem;
         }
       }
 

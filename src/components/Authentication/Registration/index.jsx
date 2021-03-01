@@ -8,6 +8,7 @@ import Validator from "../../Commons/validator";
 import { useAuthToken } from "../../../token";
 import { useRegistrationMutation } from "../../../operations/mutations";
 import { loginState } from "../../../recoil/atoms";
+import ScrollTop from "../../../utilities/scroll-top";
 
 const Registration = () => {
   const [errorMessages, setErrorMessages] = useState({});
@@ -48,7 +49,7 @@ const Registration = () => {
   return (
     <div className="register">
       <Header />
-      {/* {newUser.error && <h1>{newUser.error.graphQLErrors[0].message}</h1>} */}
+      <ScrollTop />
       <div
         class={`registration-error-message ${
           error && showError && "registration-error-message--show"

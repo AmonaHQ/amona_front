@@ -8,6 +8,7 @@ import AllAds from "./components/AllAds/index";
 import AddDetails from "./components/AdDetails/index";
 import Registration from "./components/Authentication/Registration/index";
 import BusyOverlay from "./components/Commons/busy-overlay";
+import LoadSpinner from "./components/Commons/load-spinner";
 import NewAd from "./components/NewAd/index";
 import Dashboard from "./components/Dashboard/index";
 import Login from "./components/Authentication/Login/index";
@@ -19,6 +20,7 @@ function App() {
     <CookiesProvider>
       <RecoilRoot>
         <BusyOverlay />
+        <LoadSpinner />
         <Fragment>
           <BrowserRouter>
             <Switch>

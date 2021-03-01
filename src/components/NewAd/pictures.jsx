@@ -8,6 +8,7 @@ import { adDetailsProgressState, detailsState } from "../../recoil/atoms";
 import {
   useCreateCarMutation,
   useUpdateCarMutation,
+  useCreateStateMutation,
 } from "../../operations/mutations";
 
 import removeTypeName from "../../utilities/remove-typename";
@@ -17,6 +18,7 @@ const Details = ({ plan: { price, type, planId, _id } }) => {
   const [, setStep] = useRecoilState(adDetailsProgressState);
   const [details, setDetails] = useRecoilState(detailsState);
   const [createCar, { error, data }] = useCreateCarMutation();
+  const [createState] = useCreateStateMutation();
   const [updateCar] = useUpdateCarMutation();
   const [images, setImages] = useState(details.pictures || []);
 
@@ -81,6 +83,7 @@ const Details = ({ plan: { price, type, planId, _id } }) => {
         return updateCar({ ...newDetails, _id: _id });
       }
       createCar(allDetails);
+      createState({ stateName: location.stateName });
     } else setStep(2);
   };
 
